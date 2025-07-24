@@ -19,8 +19,8 @@ class DayFactory extends Factory
         $isFilled = fake()->boolean(66);
 
         return [
-            'notes' => $isFilled ? fake()->paragraphs(2) : null,
-            'summary' => $isFilled ? fake()->sentences(1) : null,
+            'notes' => $isFilled ? fake()->paragraphs(2, true) : null,
+            'summary' => $isFilled ? fake()->sentences(1, true) : null,
         ];
     }
 }
