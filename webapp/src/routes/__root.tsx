@@ -11,6 +11,7 @@ import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary'
 import { NotFound } from '~/components/NotFound'
 import appCss from '~/styles/app.css?url'
 import { seo } from '~/utils/seo'
+import { AuthProvider } from '~/utils/auth'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -51,10 +52,6 @@ export const Route = createRootRoute({
       { rel: 'icon', href: '/favicon.ico' },
     ],
     scripts: [
-      {
-        src: '/customScript.js',
-        type: 'text/javascript',
-      },
     ],
   }),
   errorComponent: DefaultCatchBoundary,
@@ -69,20 +66,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <div className="p-2 flex gap-2 text-lg">
-          <Link
-            to="/"
-            activeProps={{
-              className: 'font-bold',
-            }}
-            activeOptions={{ exact: true }}
-          >
-            Home
-          </Link>{' '}
-        </div>
-        <hr />
-        {children}
-        <TanStackRouterDevtools position="bottom-right" />
+        <AuthProvider>
+          <div className="p-2 flex gap-2 text-lg">
+            <Link
+              to="/"
+              activeProps={{
+                className: 'font-bold',
+              }}
+              activeOptions={{ exact: true }}
+            >
+              Home
+            </Link>{' '}
+          </div>
+          <hr />
+          {children}
+          <TanStackRouterDevtools position="bottom-right" />
+        </AuthProvider>
         <Scripts />
       </body>
     </html>
