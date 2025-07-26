@@ -55,6 +55,10 @@ cd webapp
 # Install dependencies
 pnpm install
 
+# Set up environment variables
+cp .env.example .env
+# Edit .env to add your OAuth client ID
+
 # Development server
 pnpm dev
 
@@ -85,6 +89,7 @@ pnpm start
 - **State Management**: Use TanStack Query for server state
 - **Styling**: Tailwind CSS v3 (note: not v4 as specified in rules)
 - **Type Safety**: Strict TypeScript configuration enabled
+- **Environment Variables**: Configured via `.env` file with `VITE_` prefix
 
 ## Development Guidelines
 
@@ -166,7 +171,11 @@ Key variables to configure:
 ### OAuth Setup
 1. Run migrations: `sail artisan migrate`
 2. Create OAuth client: `sail artisan passport:client --public --name="App Name" --redirect_uri="http://localhost:3000/auth/callback"`
-3. Update `webapp/src/config/auth.ts` with the generated client ID
+3. Add the generated client ID to `webapp/.env`:
+   ```
+   VITE_API_BASE_URL=http://api.lifebuffer.test
+   VITE_CLIENT_ID=your-generated-client-id
+   ```
 4. For multiple domains, update redirect URIs:
    ```php
    sail artisan tinker --execute="\\Laravel\\Passport\\Client::find('client-id')->update(['redirect_uris' => json_encode(['http://localhost:3000/auth/callback', 'http://app.lifebuffer.test/auth/callback'])])"
