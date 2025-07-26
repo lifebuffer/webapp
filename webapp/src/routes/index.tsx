@@ -1,14 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useAuth } from '~/utils/auth'
-import { RequireAuth } from '~/components/RequireAuth'
+import { createFileRoute } from '@tanstack/react-router';
+import { RequireAuth } from '~/components/RequireAuth';
+import { useAuth } from '~/utils/auth';
 
 export const Route = createFileRoute('/')({
   component: Home,
-})
+});
 
 function Home() {
-  const { logout } = useAuth()
-  
+  const { logout } = useAuth();
+
   return (
     <RequireAuth>
       <div className="p-2">
@@ -16,13 +16,13 @@ function Home() {
         <div className="mt-4">
           <p className="mb-2">You are logged in.</p>
           <button
+            className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
             onClick={logout}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
           >
             Logout
           </button>
         </div>
       </div>
     </RequireAuth>
-  )
+  );
 }

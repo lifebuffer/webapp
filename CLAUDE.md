@@ -108,6 +108,14 @@ Follow rules in `/rules/laravel.md`
 
 ## Key Implementation Areas
 
+### Authentication (OAuth 2.0 with PKCE)
+- **Backend**: Laravel Passport for OAuth server
+- **Frontend**: Custom PKCE implementation with SHA-256 fallback for non-HTTPS environments
+- **Key Files**: 
+  - Frontend: `webapp/src/utils/auth.tsx`, `webapp/src/routes/auth.callback.tsx`
+  - Backend: OAuth routes handled by Laravel Passport
+- **Setup**: Run `sail artisan passport:client --public` to create OAuth clients
+
 ### Voice Input & AI Categorization
 - Frontend: Implement Web Speech API integration
 - Backend: Create endpoints for processing voice transcriptions
@@ -155,10 +163,19 @@ Key variables to configure:
 
 ## Common Tasks
 
+### OAuth Setup
+1. Run migrations: `sail artisan migrate`
+2. Create OAuth client: `sail artisan passport:client --public --name="App Name" --redirect_uri="http://localhost:3000/auth/callback"`
+3. Update `webapp/src/config/auth.ts` with the generated client ID
+4. For multiple domains, update redirect URIs:
+   ```php
+   sail artisan tinker --execute="\\Laravel\\Passport\\Client::find('client-id')->update(['redirect_uris' => json_encode(['http://localhost:3000/auth/callback', 'http://app.lifebuffer.test/auth/callback'])])"
+   ```
+
 ### Adding New API Endpoint
-1. Create controller: `php artisan make:controller NameController`
+1. Create controller: `sail artisan make:controller NameController`
 2. Define routes in `routes/api.php`
-3. Create request validation: `php artisan make:request NameRequest`
+3. Create request validation: `sail artisan make:request NameRequest`
 4. Write tests in `tests/Feature/`
 
 ### Adding New Frontend Route
@@ -168,9 +185,9 @@ Key variables to configure:
 4. Add navigation links as needed
 
 ### Database Changes
-1. Create migration: `php artisan make:migration create_table_name`
+1. Create migration: `sail artisan make:migration create_table_name`
 2. Define schema changes
-3. Run: `php artisan migrate`
+3. Run: `sail artisan migrate`
 4. Update models and relationships
 
 ## Performance Considerations

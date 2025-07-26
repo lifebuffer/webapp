@@ -1,17 +1,17 @@
 /// <reference types="vite/client" />
 import {
+  createRootRoute,
   HeadContent,
   Link,
   Scripts,
-  createRootRoute,
-} from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-import * as React from 'react'
-import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary'
-import { NotFound } from '~/components/NotFound'
-import appCss from '~/styles/app.css?url'
-import { seo } from '~/utils/seo'
-import { AuthProvider } from '~/utils/auth'
+} from '@tanstack/react-router';
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import type * as React from 'react';
+import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary';
+import { NotFound } from '~/components/NotFound';
+import appCss from '~/styles/app.css?url';
+import { AuthProvider } from '~/utils/auth';
+import { seo } from '~/utils/seo';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -26,7 +26,8 @@ export const Route = createRootRoute({
       ...seo({
         title:
           'TanStack Start | Type-Safe, Client-First, Full-Stack React Framework',
-        description: `TanStack Start is a type-safe, client-first, full-stack React framework. `,
+        description:
+          'TanStack Start is a type-safe, client-first, full-stack React framework. ',
       }),
     ],
     links: [
@@ -51,13 +52,12 @@ export const Route = createRootRoute({
       { rel: 'manifest', href: '/site.webmanifest', color: '#fffff' },
       { rel: 'icon', href: '/favicon.ico' },
     ],
-    scripts: [
-    ],
+    scripts: [],
   }),
   errorComponent: DefaultCatchBoundary,
   notFoundComponent: () => <NotFound />,
   shellComponent: RootDocument,
-})
+});
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
@@ -67,13 +67,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <AuthProvider>
-          <div className="p-2 flex gap-2 text-lg">
+          <div className="flex gap-2 p-2 text-lg">
             <Link
-              to="/"
+              activeOptions={{ exact: true }}
               activeProps={{
                 className: 'font-bold',
               }}
-              activeOptions={{ exact: true }}
+              to="/"
             >
               Home
             </Link>{' '}
@@ -85,5 +85,5 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
-  )
+  );
 }
