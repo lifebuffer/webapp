@@ -17,7 +17,7 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const { apiBaseUrl: API_BASE_URL, clientId: CLIENT_ID, scopes: SCOPES } = authConfig
+const { apiBaseUrl: API_BASE_URL, clientId: CLIENT_ID, clientSecret: CLIENT_SECRET, scopes: SCOPES } = authConfig
 
 // OAuth PKCE helpers
 function generateRandomString(length: number): string {
@@ -62,7 +62,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const accessToken = localStorage.getItem('access_token')
     const refreshToken = localStorage.getItem('refresh_token')
     
-    if (accessToken && refreshToken) {
+    console.log('Auth check - Access token exists:', !!accessToken)
+    console.log('Auth check - Refresh token exists:', !!refreshToken)
+    
+    if (accessToken) {
       setAuthState({
         isAuthenticated: true,
         accessToken,
@@ -115,16 +118,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const setTokens = (accessToken: string, refreshToken: string) => {
+    console.log('Setting tokens - Access token:', accessToken?.substring(0, 20) + '...')
+    console.log('Setting tokens - Refresh token:', refreshToken?.substring(0, 20) + '...')
+    
     if (typeof window !== 'undefined') {
       localStorage.setItem('access_token', accessToken)
-      localStorage.setItem('refresh_token', refreshToken)
+      if (refreshToken) {
+        localStorage.setItem('refresh_token', refreshToken)
+      }
+      console.log('Tokens saved to localStorage')
     }
+    
     setAuthState({
       isAuthenticated: true,
       accessToken,
       refreshToken,
       loading: false,
     })
+    console.log('Auth state updated')
   }
 
   return (

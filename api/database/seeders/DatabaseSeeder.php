@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             'id' => '9ebd8f82-e3fe-4205-87ad-bfe10e03cdd9',
             'name' => 'lifebuffer.test',
             'secret' => null,
-            'redirect_uris' => ['http://lifebuffer.test:3000/oauth/callback'],
+            'redirect_uris' => ['http://app.lifebuffer.test:3000/auth/callback'],
             'grant_types' => ['authorization_code','refresh_token'],
             'revoked' => false,
         ]);

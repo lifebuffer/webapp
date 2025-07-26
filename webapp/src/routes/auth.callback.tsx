@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useAuth } from '~/utils/auth'
 import { authConfig } from '~/config/auth'
 
-const { apiBaseUrl: API_BASE_URL, clientId: CLIENT_ID } = authConfig
+const { apiBaseUrl: API_BASE_URL, clientId: CLIENT_ID, clientSecret: CLIENT_SECRET } = authConfig
 
 export const Route = createFileRoute('/auth/callback')({
   component: AuthCallback,
@@ -43,44 +43,69 @@ function AuthCallback() {
         console.error('Missing authorization code or code verifier')
         window.location.href = '/'
         return
+      } else {
+        console.log('Code:', code)
+        console.log('Code verifier:', codeVerifier)
       }
       
       try {
+        console.log('Exchanging code for tokens...')
+        console.log('Code:', code)
+        console.log('Client ID:', CLIENT_ID)
+        console.log('Redirect URI:', window.location.origin + '/auth/callback')
+        
+        // Build form data for token exchange
+        const formData = new URLSearchParams()
+        formData.append('grant_type', 'authorization_code')
+        formData.append('client_id', CLIENT_ID)
+        formData.append('redirect_uri', window.location.origin + '/auth/callback')
+        formData.append('code_verifier', codeVerifier)
+        formData.append('code', code)
+        
+        console.log('Token request body:', formData.toString())
+        
         // Exchange authorization code for tokens
         const tokenResponse = await fetch(`${API_BASE_URL}/oauth/token`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json',
           },
-          body: JSON.stringify({
-            grant_type: 'authorization_code',
-            client_id: CLIENT_ID,
-            redirect_uri: window.location.origin + '/auth/callback',
-            code_verifier: codeVerifier,
-            code: code,
-          }),
+          body: formData.toString(),
         })
         
+        console.log('Token response status:', tokenResponse.status)
+        const responseText = await tokenResponse.text()
+        console.log('Token response:', responseText)
+        
         if (!tokenResponse.ok) {
-          throw new Error('Token exchange failed')
+          throw new Error(`Token exchange failed: ${responseText}`)
         }
         
-        const tokenData = await tokenResponse.json()
+        const tokenData = JSON.parse(responseText)
+        console.log('Parsed token data:', tokenData)
         
-        if (tokenData.access_token && tokenData.refresh_token) {
-          setTokens(tokenData.access_token, tokenData.refresh_token)
+        if (tokenData.access_token) {
+          // Handle both cases: with and without refresh token
+          const refreshToken = tokenData.refresh_token || ''
+          console.log('Setting tokens...')
+          setTokens(tokenData.access_token, refreshToken)
           
           // Clean up session storage
           sessionStorage.removeItem('oauth_state')
           sessionStorage.removeItem('oauth_code_verifier')
           
+          console.log('Redirecting to home...')
           window.location.href = '/'
         } else {
-          throw new Error('Invalid token response')
+          throw new Error('No access token in response')
         }
       } catch (error) {
         console.error('Token exchange error:', error)
-        window.location.href = '/'
+        // Don't redirect immediately to avoid loop
+        setTimeout(() => {
+          window.location.href = '/'
+        }, 10000)
       }
     }
     
