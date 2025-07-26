@@ -101,6 +101,32 @@ Stop dreading your 1-on-1s. LifeBuffer is the flexible life tracking app that ac
 - Multiple contexts
 - Custom report templates
 
+## Screens and flow
+
+The user is by default led the main daily activity management screen. You can use the app without authentification. If unauthenticated, data storage is made in the app JS store and browser local storage and a banner warns the users that creating an account is the only way to guarantee data is safe and synced. 
+
+### Main screen
+The main screen shows the content panel to add activities and notes for the current day. The date must be shown and the user can select another date on a calendar dropdown to load the data for that other day. 
+
+The main action button is to create a new activity (voice or keyboard). Once done, the activity is added to the list (JS store and sent to the API). The defaut status for an activity is new.
+
+Here are two examples of activities:
+
+{id - hidden} [{status}] {title} ({time})
+
+[x] Create a plan for Airbus presentation (80)
+[] Prepare one-to-one meeting with F.
+[-] Find hotel for THIS conference
+---
+
+[x] is done. [] is new. [-] is in progress.
+
+While this is presented with a GUI, a button can enable markdown mode with just present one markdown enabled area with all the activities. If the user updates the markdown, we need to make sure we catch all changes and update matching activities.
+
+When the chheckbox for an activity is clicked, we show a selection of available status for update. If clicked on the title, then the field can be edited by the user.
+
+We really want this to fill like a super powered notepad. No complexity or dozens of modals.
+
 ## Success Metrics
 
 ### User Engagement

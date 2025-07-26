@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Laravel\Passport\Client;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,6 +22,15 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@lifebuffer.test',
+        ]);
+
+        Client::create([
+            'id' => '9ebd8f82-e3fe-4205-87ad-bfe10e03cdd9',
+            'name' => 'lifebuffer.test',
+            'secret' => null,
+            'redirect_uris' => ['http://lifebuffer.test:3000/oauth/callback'],
+            'grant_types' => ['authorization_code','refresh_token'],
+            'revoked' => false,
         ]);
 
         User::factory(10)->create();

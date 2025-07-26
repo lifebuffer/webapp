@@ -22,3 +22,12 @@ The structure is in `database/migrations/2025_07_24_150640_create_activities_tab
 
 A day handles the notes and the summary for a specific day.
 The structure is in `database/migrations/2025_07_24_151053_create_days_table.php`
+
+### REST API
+
+The backend will serve a few different endpoints:
+
+- `/api/activities`: List of recent activities (default to 30 days). `?date` is used to filter for a selected date.
+- `/api/days`: List of recent days (default to 30 days). `?date` is used to filter for a selected date.
+
+Only the authenticated user's entities are returned for obvious security reasons. All endpoints will handle CRUD methods with proper data validation (using Policies and Requests). 

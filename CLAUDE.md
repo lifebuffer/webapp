@@ -90,6 +90,8 @@ pnpm start
 
 ### API Development Rules
 
+Follow rules in `/rules/laravel.md`
+
 1. **Controllers**: Keep thin, delegate business logic to services
 2. **Models**: Use Eloquent relationships and accessors/mutators
 3. **Validation**: Use Form Requests for complex validation
