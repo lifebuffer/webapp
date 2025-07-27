@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ContextController;
 use App\Http\Controllers\Api\TodayController;
+use App\Http\Controllers\Api\ActivityController;
+use App\Http\Controllers\Api\DayController;
 
 Route::group(['middleware' => 'auth:api'], function () {
 	Route::get('/user', function (Request $request) {
@@ -17,6 +19,12 @@ Route::group(['middleware' => 'auth:api'], function () {
 
 	// Context routes
 	Route::apiResource('contexts', ContextController::class);
+
+	// Activity routes
+	Route::put('/activities/{id}', [ActivityController::class, 'update']);
+
+	// Day routes
+	Route::put('/days/{date}', [DayController::class, 'update']);
 
 	// Today endpoint
 	Route::get('/today', [TodayController::class, 'index']);

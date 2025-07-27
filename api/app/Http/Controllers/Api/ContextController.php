@@ -26,8 +26,16 @@ class ContextController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        // Authorize the action
+        $this->authorize('create', Context::class);
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:contexts,name,NULL,id,user_id,' . $request->user()->id,
+            ],
             'icon' => 'nullable|string|max:10',
         ]);
 
@@ -41,10 +49,8 @@ class ContextController extends Controller
      */
     public function show(Request $request, Context $context): JsonResponse
     {
-        // Ensure the user owns the context
-        if ($context->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        // Authorize the action
+        $this->authorize('view', $context);
 
         return response()->json($context->load('activities'));
     }
@@ -54,13 +60,17 @@ class ContextController extends Controller
      */
     public function update(Request $request, Context $context): JsonResponse
     {
-        // Ensure the user owns the context
-        if ($context->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        // Authorize the action
+        $this->authorize('update', $context);
 
         $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
+            'name' => [
+                'sometimes',
+                'required',
+                'string',
+                'max:255',
+                'unique:contexts,name,' . $context->id . ',id,user_id,' . $request->user()->id,
+            ],
             'icon' => 'nullable|string|max:10',
         ]);
 
@@ -74,10 +84,8 @@ class ContextController extends Controller
      */
     public function destroy(Request $request, Context $context): JsonResponse
     {
-        // Ensure the user owns the context
-        if ($context->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        // Authorize the action
+        $this->authorize('delete', $context);
 
         $context->delete();
 
