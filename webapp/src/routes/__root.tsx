@@ -73,10 +73,20 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 	const { selectedDate } = state;
 
 	const formatSelectedDate = () => {
+		const today = new Date().toISOString().split('T')[0];
+		
+		if (selectedDate === today) {
+			return "Today";
+		}
+		
 		const [year, month, day] = selectedDate.split('-').map(Number);
 		const date = new Date(year, month - 1, day);
+		
+		// Show full date for non-today dates
 		return date.toLocaleDateString('en-US', {
+			weekday: 'long',
 			month: 'long',
+			day: 'numeric',
 			year: 'numeric'
 		});
 	};

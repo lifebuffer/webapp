@@ -5,11 +5,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 LifeBuffer is a cross-platform life tracking app with:
+
 - **Backend API**: Laravel 12 (PHP 8.2+) - Located in `/api`
 - **Frontend Web App**: TanStack Start with React 19 - Located in `/webapp`
 - **Key Features**: Activity logging, voice input, AI categorization, flexible reporting
 
 ## Essential Commands
+
+Never change any code when the user asks to commit!
 
 ### API (Laravel) Development
 
@@ -114,24 +117,28 @@ Follow rules in `/rules/laravel.md`
 ## Key Implementation Areas
 
 ### Authentication (OAuth 2.0 with PKCE)
+
 - **Backend**: Laravel Passport for OAuth server
 - **Frontend**: Custom PKCE implementation with SHA-256 fallback for non-HTTPS environments
-- **Key Files**: 
+- **Key Files**:
   - Frontend: `webapp/src/utils/auth.tsx`, `webapp/src/routes/auth.callback.tsx`
   - Backend: OAuth routes handled by Laravel Passport
 - **Setup**: Run `sail artisan passport:client --public` to create OAuth clients
 
 ### Voice Input & AI Categorization
+
 - Frontend: Implement Web Speech API integration
 - Backend: Create endpoints for processing voice transcriptions
 - AI Integration: Set up service for categorization logic
 
 ### Activity Management
+
 - Models: `Activity`, `Context`, `Category`
 - API Endpoints: CRUD operations for activities
 - Frontend: Activity list, creation forms, search interface
 
 ### Reporting System
+
 - Backend: Report generation service with templates
 - Export Formats: Implement CSV, JSON, and formatted text
 - Frontend: Report builder interface
@@ -139,6 +146,7 @@ Follow rules in `/rules/laravel.md`
 ## Testing Commands
 
 ### API Tests
+
 ```bash
 cd api
 php artisan test
@@ -147,6 +155,7 @@ php artisan test --parallel
 ```
 
 ### Frontend Tests
+
 ```bash
 cd webapp
 # Add test runner when configured (Vitest recommended)
@@ -155,13 +164,16 @@ cd webapp
 ## Environment Configuration
 
 ### API (.env)
+
 Key variables to configure:
+
 - `APP_URL`
 - `DB_CONNECTION` (sqlite default)
 - `QUEUE_CONNECTION`
 - API keys for AI services
 
 ### Web App
+
 - Configure API endpoint in environment
 - Set up authentication tokens
 - Configure feature flags
@@ -169,6 +181,7 @@ Key variables to configure:
 ## Common Tasks
 
 ### OAuth Setup
+
 1. Run migrations: `sail artisan migrate`
 2. Create OAuth client: `sail artisan passport:client --public --name="App Name" --redirect_uri="http://localhost:3000/auth/callback"`
 3. Add the generated client ID to `webapp/.env`:
@@ -182,18 +195,21 @@ Key variables to configure:
    ```
 
 ### Adding New API Endpoint
+
 1. Create controller: `sail artisan make:controller NameController`
 2. Define routes in `routes/api.php`
 3. Create request validation: `sail artisan make:request NameRequest`
 4. Write tests in `tests/Feature/`
 
 ### Adding New Frontend Route
+
 1. Create file in `src/routes/`
 2. Export route component
 3. Type-safe params automatically inferred
 4. Add navigation links as needed
 
 ### Database Changes
+
 1. Create migration: `sail artisan make:migration create_table_name`
 2. Define schema changes
 3. Run: `sail artisan migrate`

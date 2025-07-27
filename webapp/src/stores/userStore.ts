@@ -1,6 +1,6 @@
 import { Store } from "@tanstack/react-store";
 import { api } from "~/utils/api";
-import type { Context, User, Activity, Day } from "~/utils/types";
+import type { Activity, Context, Day, User } from "~/utils/types";
 
 interface CachedDayData {
 	day: Day;
@@ -13,6 +13,7 @@ interface UserState {
 	activities: Activity[];
 	currentDay: Day | null;
 	selectedDate: string; // YYYY-MM-DD format
+	selectedContextId: number | null; // null means "All" contexts
 	dayCache: Record<string, CachedDayData>; // Cache days by date (YYYY-MM-DD)
 	loading: {
 		contexts: boolean;
@@ -29,7 +30,7 @@ interface UserState {
 // Get today's date in YYYY-MM-DD format
 const getTodayString = () => {
 	const today = new Date();
-	return today.toISOString().split('T')[0];
+	return today.toISOString().split("T")[0];
 };
 
 const initialState: UserState = {
@@ -38,6 +39,7 @@ const initialState: UserState = {
 	activities: [],
 	currentDay: null,
 	selectedDate: getTodayString(),
+	selectedContextId: null, // Show all contexts by default
 	dayCache: {},
 	loading: {
 		contexts: false,
@@ -90,6 +92,13 @@ export const userActions = {
 		}));
 	},
 
+	setSelectedContextId: (selectedContextId: number | null) => {
+		userStore.setState((state: UserState) => ({
+			...state,
+			selectedContextId,
+		}));
+	},
+
 	cacheDayData: (date: string, dayData: CachedDayData) => {
 		userStore.setState((state: UserState) => ({
 			...state,
@@ -100,7 +109,9 @@ export const userActions = {
 		}));
 	},
 
-	cacheMultipleDays: (daysData: Array<{ date: string; data: CachedDayData }>) => {
+	cacheMultipleDays: (
+		daysData: Array<{ date: string; data: CachedDayData }>,
+	) => {
 		userStore.setState((state: UserState) => {
 			const newCache = { ...state.dayCache };
 			daysData.forEach(({ date, data }) => {
@@ -109,6 +120,64 @@ export const userActions = {
 			return {
 				...state,
 				dayCache: newCache,
+			};
+		});
+	},
+
+	updateActivityInCache: (
+		date: string,
+		activityId: string,
+		updatedActivity: Activity,
+	) => {
+		userStore.setState((state: UserState) => {
+			const cachedDay = state.dayCache[date];
+			if (!cachedDay) return state;
+
+			const updatedActivities = cachedDay.activities.map((activity) =>
+				activity.id === activityId ? updatedActivity : activity,
+			);
+
+			const newCache = {
+				...state.dayCache,
+				[date]: {
+					...cachedDay,
+					activities: updatedActivities,
+				},
+			};
+
+			// Also update current activities if it's the selected date
+			const newActivities =
+				state.selectedDate === date ? updatedActivities : state.activities;
+
+			return {
+				...state,
+				dayCache: newCache,
+				activities: newActivities,
+			};
+		});
+	},
+
+	updateDayInCache: (date: string, updatedDay: Day) => {
+		userStore.setState((state: UserState) => {
+			const cachedDay = state.dayCache[date];
+			if (!cachedDay) return state;
+
+			const newCache = {
+				...state.dayCache,
+				[date]: {
+					...cachedDay,
+					day: updatedDay,
+				},
+			};
+
+			// Also update currentDay if it's the selected date
+			const newCurrentDay =
+				state.selectedDate === date ? updatedDay : state.currentDay;
+
+			return {
+				...state,
+				dayCache: newCache,
+				currentDay: newCurrentDay,
 			};
 		});
 	},
@@ -294,13 +363,13 @@ export const userActions = {
 
 		try {
 			const data = await api.dayData(date);
-			
+
 			// Cache the fetched data
 			userActions.cacheDayData(date, {
 				day: data.day,
 				activities: data.activities,
 			});
-			
+
 			// Set current data
 			userActions.setCurrentDay(data.day);
 			userActions.setActivities(data.activities);
@@ -320,7 +389,7 @@ export const userActions = {
 
 		try {
 			const data = await api.recentDays();
-			
+
 			// Prepare data for caching
 			const daysToCache = data.days.map((dayData) => ({
 				date: dayData.day.date,
@@ -329,10 +398,10 @@ export const userActions = {
 					activities: dayData.activities,
 				},
 			}));
-			
+
 			// Cache all the days
 			userActions.cacheMultipleDays(daysToCache);
-			
+
 			// Update contexts as well
 			userActions.setContexts(data.contexts);
 		} catch (error) {
@@ -341,6 +410,26 @@ export const userActions = {
 			userActions.setRecentDaysError(errorMessage);
 		} finally {
 			userActions.setRecentDaysLoading(false);
+		}
+	},
+
+	updateDay: async (
+		date: string,
+		data: Partial<
+			Omit<
+				Day,
+				"id" | "user_id" | "date" | "created_at" | "updated_at" | "deleted_at"
+			>
+		>,
+	) => {
+		try {
+			const updatedDay = await api.days.update(date, data);
+			userActions.updateDayInCache(date, updatedDay);
+			return updatedDay;
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : "Failed to update day";
+			throw new Error(errorMessage);
 		}
 	},
 };

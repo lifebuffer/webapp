@@ -162,4 +162,22 @@ export const api = {
   
   // Get recent days data
   recentDays: (): Promise<RecentDaysResponse> => apiRequest('/api/recent'),
+
+  // Activity API methods
+  activities: {
+    update: (id: string, data: Partial<Omit<Activity, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'deleted_at'>>): Promise<Activity> =>
+      apiRequest(`/api/activities/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+  },
+
+  // Day API methods
+  days: {
+    update: (date: string, data: Partial<Omit<Day, 'id' | 'user_id' | 'date' | 'created_at' | 'updated_at' | 'deleted_at'>>): Promise<Day> =>
+      apiRequest(`/api/days/${date}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+  },
 };

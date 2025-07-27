@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { Clock, FileText } from "lucide-react";
 import * as React from "react";
+import { ActivityModal } from "~/components/activity-modal";
+import { EditableMarkdown } from "~/components/editable-markdown";
 import { RequireAuth } from "~/components/require-auth";
 import { Badge } from "~/components/ui/badge";
 import {
@@ -22,7 +24,28 @@ export const Route = createFileRoute("/")({
 function Home() {
 	const { isAuthenticated } = useAuth();
 	const state = useStore(userStore);
-	const { currentDay, activities, loading, error, selectedDate } = state;
+	const {
+		currentDay,
+		activities,
+		loading,
+		error,
+		selectedDate,
+		selectedContextId,
+	} = state;
+
+	const [selectedActivity, setSelectedActivity] =
+		React.useState<Activity | null>(null);
+	const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+	// Filter activities by selected context
+	const filteredActivities = React.useMemo(() => {
+		if (selectedContextId === null) {
+			return activities; // Show all activities
+		}
+		return activities.filter(
+			(activity) => activity.context_id === selectedContextId,
+		);
+	}, [activities, selectedContextId]);
 
 	React.useEffect(() => {
 		// Fetch data for the selected date when the dashboard loads and user is authenticated
@@ -64,6 +87,16 @@ function Home() {
 		return `${mins}m`;
 	};
 
+	const handleActivityClick = (activity: Activity) => {
+		setSelectedActivity(activity);
+		setIsModalOpen(true);
+	};
+
+	const handleDayNotesUpdate = async (content: string) => {
+		if (!currentDay) return;
+		await userActions.updateDay(currentDay.date, { notes: content });
+	};
+
 	return (
 		<RequireAuth>
 			<div className="space-y-6">
@@ -73,36 +106,17 @@ function Home() {
 						<CardHeader>
 							<CardTitle>
 								{(() => {
-									const today = new Date().toISOString().split('T')[0];
+									const today = new Date().toISOString().split("T")[0];
 									return selectedDate === today ? "Today's Notes" : "Notes";
 								})()}
 							</CardTitle>
-							<CardDescription>
-								{(() => {
-									// Parse the date string as local date instead of UTC
-									const [year, month, day] = currentDay.date
-										.split("-")
-										.map(Number);
-									const localDate = new Date(year, month - 1, day);
-									return localDate.toLocaleDateString("en-US", {
-										weekday: "long",
-										year: "numeric",
-										month: "long",
-										day: "numeric",
-									});
-								})()}
-							</CardDescription>
 						</CardHeader>
 						<CardContent>
-							{currentDay.notes ? (
-								<p className="text-sm text-muted-foreground whitespace-pre-wrap">
-									{currentDay.notes}
-								</p>
-							) : (
-								<p className="text-sm text-muted-foreground italic">
-									No notes for today yet.
-								</p>
-							)}
+							<EditableMarkdown
+								content={currentDay.notes || ""}
+								placeholder="Click to add notes..."
+								onSave={handleDayNotesUpdate}
+							/>
 						</CardContent>
 					</Card>
 				)}
@@ -112,10 +126,10 @@ function Home() {
 					<CardHeader>
 						<CardTitle>Activities</CardTitle>
 						<CardDescription>
-							{activities.length}{" "}
-							{activities.length === 1 ? "activity" : "activities"}
+							{filteredActivities.length}{" "}
+							{filteredActivities.length === 1 ? "activity" : "activities"}
 							{(() => {
-								const today = new Date().toISOString().split('T')[0];
+								const today = new Date().toISOString().split("T")[0];
 								return selectedDate === today ? " for today" : "";
 							})()}
 						</CardDescription>
@@ -131,18 +145,30 @@ function Home() {
 							<div className="flex items-center justify-center py-8">
 								<p className="text-sm text-destructive">{error.todayData}</p>
 							</div>
-						) : activities.length === 0 ? (
+						) : filteredActivities.length === 0 ? (
 							<div className="flex items-center justify-center py-8">
 								<p className="text-sm text-muted-foreground">
-									No activities{selectedDate === new Date().toISOString().split('T')[0] ? " yet today" : " for this date"}.
+									{selectedContextId === null
+										? `No activities${selectedDate === new Date().toISOString().split("T")[0] ? " yet today" : " for this date"}.`
+										: "No activities found for the selected context."}
 								</p>
 							</div>
 						) : (
 							<div className="space-y-2">
-								{activities.map((activity) => (
+								{filteredActivities.map((activity) => (
+									// biome-ignore lint/a11y/useSemanticElements: <TODO: fix this>
 									<div
 										key={activity.id}
-										className="flex items-center gap-4 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+										role="button"
+										tabIndex={0}
+										className="flex items-center gap-4 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer"
+										onClick={() => handleActivityClick(activity)}
+										onKeyDown={(e) => {
+											if (e.key === "Enter" || e.key === " ") {
+												e.preventDefault();
+												handleActivityClick(activity);
+											}
+										}}
 									>
 										{/* Status Badge */}
 										<Badge
@@ -187,6 +213,12 @@ function Home() {
 						)}
 					</CardContent>
 				</Card>
+
+				<ActivityModal
+					activity={selectedActivity}
+					open={isModalOpen}
+					onOpenChange={setIsModalOpen}
+				/>
 			</div>
 		</RequireAuth>
 	);

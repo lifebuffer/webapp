@@ -1,6 +1,8 @@
 import { Check, ChevronRight, Plus } from "lucide-react"
 import { useStore } from "@tanstack/react-store"
-import { userStore } from "~/stores/userStore"
+import * as React from "react"
+import { AddContextModal } from "~/components/add-context-modal"
+import { userActions, userStore } from "~/stores/userStore"
 import { useAuth } from "~/utils/auth"
 import type { Context } from "~/utils/types"
 
@@ -21,8 +23,9 @@ import {
 
 export function Contexts() {
   const state = useStore(userStore)
-  const { contexts, loading, error } = state
+  const { contexts, loading, error, selectedContextId } = state
   const { isAuthenticated } = useAuth()
+  const [isAddModalOpen, setIsAddModalOpen] = React.useState(false)
 
   // Data is now loaded at the dashboard level
 
@@ -76,9 +79,28 @@ export function Contexts() {
           <CollapsibleContent>
             <SidebarGroupContent>
               <SidebarMenu>
+                {/* All contexts option */}
+                <SidebarMenuItem>
+                  <SidebarMenuButton 
+                    isActive={selectedContextId === null}
+                    onClick={() => userActions.setSelectedContextId(null)}
+                    className={selectedContextId === null ? "bg-primary text-primary-foreground" : ""}
+                  >
+                    <div className="flex aspect-square size-4 shrink-0 items-center justify-center rounded-sm border border-sidebar-border text-sidebar-primary-foreground">
+                      <span className="text-xs">📋</span>
+                    </div>
+                    All
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                {/* Individual contexts */}
                 {contexts.map((context: Context) => (
                   <SidebarMenuItem key={context.id}>
-                    <SidebarMenuButton>
+                    <SidebarMenuButton 
+                      isActive={selectedContextId === context.id}
+                      onClick={() => userActions.setSelectedContextId(context.id)}
+                      className={selectedContextId === context.id ? "bg-primary text-primary-foreground" : ""}
+                    >
                       <div className="flex aspect-square size-4 shrink-0 items-center justify-center rounded-sm border border-sidebar-border text-sidebar-primary-foreground">
                         {context.icon ? (
                           <span className="text-xs">{context.icon}</span>
@@ -90,13 +112,12 @@ export function Contexts() {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
+                
+                {/* Add context option */}
                 <SidebarMenuItem>
                   <SidebarMenuButton 
                     className="text-sidebar-muted-foreground hover:text-sidebar-foreground"
-                    onClick={() => {
-                      // TODO: Open create context dialog
-                      console.log('Create new context')
-                    }}
+                    onClick={() => setIsAddModalOpen(true)}
                   >
                     <div className="flex aspect-square size-4 shrink-0 items-center justify-center rounded-sm border border-dashed border-sidebar-border">
                       <Plus className="size-3" />
@@ -110,6 +131,11 @@ export function Contexts() {
         </Collapsible>
       </SidebarGroup>
       <SidebarSeparator className="mx-0" />
+      
+      <AddContextModal 
+        open={isAddModalOpen} 
+        onOpenChange={setIsAddModalOpen} 
+      />
     </>
   )
 }
