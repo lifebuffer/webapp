@@ -1,26 +1,34 @@
 import { Store } from "@tanstack/react-store";
 import { api } from "~/utils/api";
-import type { Context, User } from "~/utils/types";
+import type { Context, User, Activity, Day } from "~/utils/types";
 
 interface UserState {
 	user: User | null;
 	contexts: Context[];
+	activities: Activity[];
+	currentDay: Day | null;
 	loading: {
 		contexts: boolean;
+		todayData: boolean;
 	};
 	error: {
 		contexts: string | null;
+		todayData: string | null;
 	};
 }
 
 const initialState: UserState = {
 	user: null,
 	contexts: [],
+	activities: [],
+	currentDay: null,
 	loading: {
 		contexts: false,
+		todayData: false,
 	},
 	error: {
 		contexts: null,
+		todayData: null,
 	},
 };
 
@@ -39,6 +47,20 @@ export const userActions = {
 		userStore.setState((state: UserState) => ({
 			...state,
 			contexts,
+		}));
+	},
+
+	setActivities: (activities: Activity[]) => {
+		userStore.setState((state: UserState) => ({
+			...state,
+			activities,
+		}));
+	},
+
+	setCurrentDay: (currentDay: Day | null) => {
+		userStore.setState((state: UserState) => ({
+			...state,
+			currentDay,
 		}));
 	},
 
@@ -81,6 +103,26 @@ export const userActions = {
 			error: {
 				...state.error,
 				contexts: error,
+			},
+		}));
+	},
+
+	setTodayDataLoading: (loading: boolean) => {
+		userStore.setState((state: UserState) => ({
+			...state,
+			loading: {
+				...state.loading,
+				todayData: loading,
+			},
+		}));
+	},
+
+	setTodayDataError: (error: string | null) => {
+		userStore.setState((state: UserState) => ({
+			...state,
+			error: {
+				...state.error,
+				todayData: error,
 			},
 		}));
 	},
@@ -146,14 +188,36 @@ export const userActions = {
 			throw error;
 		}
 	},
+
+	fetchTodayData: async () => {
+		userActions.setTodayDataLoading(true);
+		userActions.setTodayDataError(null);
+
+		try {
+			const data = await api.today();
+			userActions.setCurrentDay(data.day);
+			userActions.setActivities(data.activities);
+			userActions.setContexts(data.contexts);
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : "Failed to fetch today's data";
+			userActions.setTodayDataError(errorMessage);
+		} finally {
+			userActions.setTodayDataLoading(false);
+		}
+	},
 };
 
 // Selectors
 export const userSelectors = {
 	getUser: () => userStore.state.user,
 	getContexts: () => userStore.state.contexts,
+	getActivities: () => userStore.state.activities,
+	getCurrentDay: () => userStore.state.currentDay,
 	getContextsLoading: () => userStore.state.loading.contexts,
+	getTodayDataLoading: () => userStore.state.loading.todayData,
 	getContextsError: () => userStore.state.error.contexts,
+	getTodayDataError: () => userStore.state.error.todayData,
 	getContextById: (id: number) =>
 		userStore.state.contexts.find((context: Context) => context.id === id),
 };

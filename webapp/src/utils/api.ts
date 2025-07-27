@@ -1,5 +1,5 @@
 import { authConfig } from '~/config/auth';
-import type { Context } from '~/utils/types';
+import type { Context, Activity, Day } from '~/utils/types';
 
 const { apiBaseUrl: API_BASE_URL, clientId: CLIENT_ID, scopes: SCOPES } = authConfig;
 
@@ -117,6 +117,12 @@ async function apiRequest<T>(
   return response.json();
 }
 
+export interface TodayResponse {
+  day: Day;
+  activities: Activity[];
+  contexts: Context[];
+}
+
 export const api = {
   // Context API methods
   contexts: {
@@ -137,4 +143,7 @@ export const api = {
         method: 'DELETE',
       }),
   },
+  
+  // Today endpoint
+  today: (): Promise<TodayResponse> => apiRequest('/api/today'),
 };

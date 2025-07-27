@@ -13,6 +13,7 @@ class Activity extends Model
     use HasFactory, SoftDeletes, HasUuids;
 
     protected $fillable = [
+        'user_id',
         'date',
         'title',
         'notes',

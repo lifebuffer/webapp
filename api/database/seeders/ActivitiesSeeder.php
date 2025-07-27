@@ -19,14 +19,13 @@ class ActivitiesSeeder extends Seeder
             $today = Carbon::today();
             // echo "Date: " . $today->format('Y-m-d')."\r\n";
             for($i = 0; $i < 90; $i++) {
-                $today->subDay();
-
                 for($j = 0; $j < rand(0, 10); $j++) {
                     Activity::factory()->create([
                         'date' => $today->format('Y-m-d'),
                         'user_id' => $user->id
                     ]);
                 }
+                $today->subDay();
             }
         }
     }

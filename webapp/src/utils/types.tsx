@@ -22,13 +22,12 @@ export interface Context {
 export interface Activity {
   id: string; // UUID
   user_id: number;
-  day_id: number | null;
   context_id: number | null;
   date: string;
   title: string;
   notes: string | null;
-  status: string;
-  time: string | null;
+  status: 'new' | 'in_progress' | 'done';
+  time: number | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -38,14 +37,12 @@ export interface Activity {
 
 // Day type
 export interface Day {
-  id: number;
+  id: string; // UUID
   user_id: number;
   date: string;
+  notes: string | null;
   summary: string | null;
-  mood: number | null;
-  energy: number | null;
   created_at: string;
   updated_at: string;
-  // Relations
-  activities?: Activity[];
+  deleted_at: string | null;
 }

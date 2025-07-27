@@ -1,7 +1,6 @@
-import * as React from "react"
 import { Check, ChevronRight, Plus } from "lucide-react"
 import { useStore } from "@tanstack/react-store"
-import { userStore, userActions } from "~/stores/userStore"
+import { userStore } from "~/stores/userStore"
 import { useAuth } from "~/utils/auth"
 import type { Context } from "~/utils/types"
 
@@ -25,12 +24,7 @@ export function Contexts() {
   const { contexts, loading, error } = state
   const { isAuthenticated } = useAuth()
 
-  React.useEffect(() => {
-    // Fetch contexts when component mounts and user is authenticated
-    if (isAuthenticated) {
-      userActions.fetchContexts()
-    }
-  }, [isAuthenticated])
+  // Data is now loaded at the dashboard level
 
   if (!isAuthenticated) {
     return null

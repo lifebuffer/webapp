@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ContextController;
+use App\Http\Controllers\Api\TodayController;
 
 Route::group(['middleware' => 'auth:api'], function () {
 	Route::get('/user', function (Request $request) {
@@ -16,4 +17,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
 	// Context routes
 	Route::apiResource('contexts', ContextController::class);
+
+	// Today endpoint
+	Route::get('/today', [TodayController::class, 'index']);
 });
