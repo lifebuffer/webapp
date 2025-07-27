@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Observers\UserObserver;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 
@@ -20,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register model observers
+        User::observe(UserObserver::class);
+
         Passport::authorizationView('auth.authorize');
         Passport::tokensCan([
             'use-app' => 'Use app scope'
