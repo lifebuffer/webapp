@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ContextController;
 use App\Http\Controllers\Api\TodayController;
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\DayController;
+use App\Http\Controllers\Api\UserController;
 
 Route::group(['middleware' => 'auth:api'], function () {
 	Route::get('/user', function (Request $request) {
@@ -16,6 +17,11 @@ Route::group(['middleware' => 'auth:api'], function () {
 		$request->user()->token()->revoke();
 		return response()->json(['message' => 'Successfully logged out']);
 	});
+
+	// User profile management
+	Route::get('/profile', [UserController::class, 'profile']);
+	Route::put('/profile', [UserController::class, 'updateProfile']);
+	Route::delete('/account', [UserController::class, 'deleteAccount']);
 
 	// Context routes
 	Route::apiResource('contexts', ContextController::class);

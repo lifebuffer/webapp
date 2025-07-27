@@ -116,7 +116,7 @@ Follow rules in `/rules/laravel.md`
 
 ## Key Implementation Areas
 
-### Authentication (OAuth 2.0 with PKCE)
+### Authentication (OAuth 2.0 with PKCE) ✅ Implemented
 
 - **Backend**: Laravel Passport for OAuth server
 - **Frontend**: Custom PKCE implementation with SHA-256 fallback for non-HTTPS environments
@@ -125,19 +125,69 @@ Follow rules in `/rules/laravel.md`
   - Backend: OAuth routes handled by Laravel Passport
 - **Setup**: Run `sail artisan passport:client --public` to create OAuth clients
 
-### Voice Input & AI Categorization
+### Activity Management ✅ Implemented
+
+- **Models**: `Activity`, `Context`, `Day` with proper relationships
+- **API Endpoints**: Full CRUD operations with Laravel policies for authorization
+- **Frontend Components**:
+  - `ActivityModal`: Complete activity editing with auto-save functionality
+  - Activity list with context filtering and status management
+  - Real-time cache updates using TanStack Store
+- **Key Files**:
+  - Backend: `api/app/Http/Controllers/Api/ActivityController.php`
+  - Frontend: `webapp/src/components/activity-modal.tsx`
+  - Store: `webapp/src/stores/userStore.ts`
+
+### Context Management ✅ Implemented
+
+- **Features**: Create, update, delete contexts with emoji icons
+- **Filtering**: Sidebar context filter with visual selection indicators
+- **Validation**: Prevent duplicate context names per user
+- **Components**:
+  - `AddContextModal`: Context creation with emoji picker
+  - `Contexts`: Sidebar component with filtering functionality
+- **Key Files**:
+  - Backend: `api/app/Http/Controllers/Api/ContextController.php`
+  - Frontend: `webapp/src/components/add-context-modal.tsx`, `webapp/src/components/contexts.tsx`
+
+### Day Notes Management ✅ Implemented
+
+- **Features**: Markdown-enabled notes with live preview and editing
+- **Components**: `EditableMarkdown` with view/edit toggle
+- **Functionality**:
+  - Click to edit, save/cancel options
+  - Keyboard shortcuts (Ctrl+Enter to save, Esc to cancel)
+  - Copy to clipboard functionality
+  - Real-time preview using react-markdown
+- **Key Files**:
+  - Backend: `api/app/Http/Controllers/Api/DayController.php`
+  - Frontend: `webapp/src/components/editable-markdown.tsx`
+
+### Security & Authorization ✅ Implemented
+
+- **Laravel Policies**: Complete authorization system for Day, Activity, and Context models
+- **Features**: User-scoped data access, proper 403 responses
+- **Key Files**:
+  - `api/app/Policies/DayPolicy.php`
+  - `api/app/Policies/ActivityPolicy.php`
+  - `api/app/Policies/ContextPolicy.php`
+
+### State Management ✅ Implemented
+
+- **TanStack Store**: Centralized state management with intelligent caching
+- **Features**:
+  - Day-based cache system for activities and notes
+  - Context filtering state
+  - Real-time updates across components
+  - Background data fetching for recent days
+
+### Voice Input & AI Categorization 🚧 Planned
 
 - Frontend: Implement Web Speech API integration
 - Backend: Create endpoints for processing voice transcriptions
 - AI Integration: Set up service for categorization logic
 
-### Activity Management
-
-- Models: `Activity`, `Context`, `Category`
-- API Endpoints: CRUD operations for activities
-- Frontend: Activity list, creation forms, search interface
-
-### Reporting System
+### Reporting System 🚧 Planned
 
 - Backend: Report generation service with templates
 - Export Formats: Implement CSV, JSON, and formatted text
@@ -177,6 +227,46 @@ Key variables to configure:
 - Configure API endpoint in environment
 - Set up authentication tokens
 - Configure feature flags
+
+## Component Architecture
+
+### Core UI Components ✅ Implemented
+
+- **ActivityModal**: Full-featured activity editing modal with auto-save
+  - Status dropdown with shadcn components
+  - Context selection with real-time filtering
+  - Time input with smart parsing
+  - Auto-save on blur with unsaved changes indicator
+  
+- **AddContextModal**: Context creation with rich UX
+  - Emoji picker with 40+ predefined options
+  - Duplicate name validation
+  - Keyboard shortcuts support
+  
+- **EditableMarkdown**: Versatile markdown editor
+  - View/edit mode toggle
+  - Live markdown preview with react-markdown
+  - Copy to clipboard functionality
+  - Keyboard shortcuts (Ctrl+Enter, Esc)
+  
+- **Contexts Sidebar**: Smart context filtering
+  - Visual selection indicators (bg-primary/text-primary-foreground)
+  - "All" option for resetting filters
+  - Click-to-filter functionality
+  
+### shadcn/ui Components Added
+  
+- `Dialog`: Modal dialogs for activity and context forms
+- `Textarea`: Multi-line text input for notes and descriptions
+- Enhanced `Calendar`: Date selection with proper styling
+- `DropdownMenu`: Used for status selection in activity modal
+
+### State Management Patterns
+
+- **TanStack Store**: Centralized state with actions and selectors
+- **Cache-first approach**: Immediate UI updates with background sync
+- **Optimistic updates**: UI responds instantly, API syncs in background
+- **Error handling**: Graceful error states with user feedback
 
 ## Common Tasks
 

@@ -44,11 +44,22 @@ pnpm dev
 
 ## Features
 
-- **Activity Logging**: Quick manual and voice input
-- **AI Categorization**: Smart activity organization
-- **Flexible Reporting**: Export to multiple formats
-- **Cross-Platform**: Web, mobile, and desktop ready
-- **Real-Time Sync**: Instant updates across devices
+### ✅ Implemented Features
+
+- **Activity Management**: Complete CRUD operations with auto-save functionality
+- **Context Organization**: Create and filter activities by context with emoji support
+- **Day Notes**: Markdown-enabled notes with live preview and editing
+- **Date Navigation**: Smart date selection with intelligent caching
+- **Security**: Laravel policies and OAuth authentication with PKCE
+- **Real-Time Updates**: Automatic cache management and state synchronization
+
+### 🚧 Planned Features
+
+- **Voice Input**: Web Speech API integration for quick activity logging
+- **AI Categorization**: Smart activity organization and suggestions
+- **Flexible Reporting**: Export activities to multiple formats (CSV, JSON, PDF)
+- **Mobile Support**: Progressive web app capabilities
+- **Team Features**: Shared contexts and collaborative tracking
 
 ## Development
 

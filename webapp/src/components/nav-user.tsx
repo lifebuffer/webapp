@@ -1,4 +1,6 @@
-import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-react";
+import { BadgeCheck, ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { useStore } from "@tanstack/react-store";
 
 // biome-ignore lint/correctness/noUnusedImports: <TODO>
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -18,10 +20,12 @@ import {
 	useSidebar,
 } from "~/components/ui/sidebar";
 import { useAuth } from "~/utils/auth";
+import { userStore } from "~/stores/userStore";
 
 export function NavUser() {
 	const { isMobile } = useSidebar();
-	const { user, logout } = useAuth();
+	const { logout } = useAuth();
+	const { user } = useStore(userStore);
 
 	return (
 		<>
@@ -78,9 +82,11 @@ export function NavUser() {
 								</DropdownMenuGroup> */}
 								<DropdownMenuSeparator />
 								<DropdownMenuGroup>
-									<DropdownMenuItem>
-										<BadgeCheck />
-										Account
+									<DropdownMenuItem asChild>
+										<Link to="/settings" className="flex items-center">
+											<BadgeCheck />
+											Account
+										</Link>
 									</DropdownMenuItem>
 									{/* <DropdownMenuItem>
 										<CreditCard />
@@ -92,8 +98,8 @@ export function NavUser() {
 									</DropdownMenuItem> */}
 								</DropdownMenuGroup>
 								<DropdownMenuSeparator />
-								<DropdownMenuItem>
-									<LogOut onClick={logout} />
+								<DropdownMenuItem onClick={logout}>
+									<LogOut />
 									Log out
 								</DropdownMenuItem>
 							</DropdownMenuContent>

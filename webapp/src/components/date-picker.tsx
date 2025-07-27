@@ -1,4 +1,5 @@
 import { useStore } from "@tanstack/react-store"
+import { useRouter } from "@tanstack/react-router"
 import * as React from "react"
 import { Calendar } from "~/components/ui/calendar"
 import {
@@ -8,6 +9,7 @@ import {
 import { userStore, userActions } from "~/stores/userStore"
 
 export function DatePicker() {
+  const router = useRouter()
   const state = useStore(userStore)
   const { selectedDate } = state
 
@@ -27,6 +29,11 @@ export function DatePicker() {
       
       // Fetch data for the selected date
       userActions.fetchDayData(dateString)
+      
+      // Navigate to index route if not already there
+      if (router.state.location.pathname !== '/') {
+        router.navigate({ to: '/' })
+      }
     }
   }
 

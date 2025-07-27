@@ -32,28 +32,37 @@ Stop dreading your 1-on-1s. LifeBuffer is the flexible life tracking app that ac
 
 ## Core Features
 
-### 1. Activity Logging
+### Implementation Status Legend
+- ✅ **Implemented**: Feature is complete and functional
+- ⚠️ **Partially Implemented**: Some aspects completed, others in progress
+- 🚧 **Planned**: Feature designed but not yet implemented
+
+### 1. Activity Logging ✅ Implemented
 - **Manual Entry**: Users can manually log activities as they happen
-- **Voice Input**: Voice-to-text functionality for quick activity capture
-- **AI Categorization**: Smart suggestions for categorizing voice entries into appropriate contexts
 - **Context Organization**: Activities organized by user-defined contexts (e.g., "Work", "Side Projects", "Personal")
+- **Activity Modal**: Full-featured editing modal with auto-save functionality
+- **Status Management**: Activities have status (new, in progress, done) with visual indicators
+- **🚧 Voice Input**: Voice-to-text functionality for quick activity capture (planned)
+- **🚧 AI Categorization**: Smart suggestions for categorizing voice entries into appropriate contexts (planned)
 
-### 2. Daily Organization
-- **Day-Based Structure**: All activities organized by date
-- **Daily Notes**: Free-form notes for each day to capture broader context, thoughts, and observations
+### 2. Daily Organization ✅ Implemented
+- **Day-Based Structure**: All activities organized by date with intelligent caching
+- **Daily Notes**: Free-form markdown notes with live preview and editing
 - **Combined View**: Activities and notes displayed together for each day
+- **Date Navigation**: Calendar-based date selection with today API endpoint
+- **Editable Markdown**: Click-to-edit notes with keyboard shortcuts and copy functionality
 
-### 3. Time Tracking (Premium)
+### 3. Time Tracking (Premium) 🚧 Planned
 - **Optional Time Logging**: Users can add time duration to any activity
 - **Time Summaries**: View time spent per context, project, or time period
 
-### 4. Search & Discovery
-- **Full-Text Search**: Search across all activities and notes
-- **AI-Powered Related Tasks**: Find similar or related activities using embeddings
-- **Context Filtering**: Filter activities by context, date range, or keywords
-- **Smart Insights**: AI suggestions for patterns and connections
+### 4. Search & Discovery ⚠️ Partially Implemented
+- **Context Filtering**: ✅ Filter activities by context with visual selection indicators
+- **🚧 Full-Text Search**: Search across all activities and notes (planned)
+- **🚧 AI-Powered Related Tasks**: Find similar or related activities using embeddings (planned)
+- **🚧 Smart Insights**: AI suggestions for patterns and connections (planned)
 
-### 5. Reporting & Export
+### 5. Reporting & Export 🚧 Planned
 - **Flexible Export Formats**: 
   - Text summaries (grouped by day/context)
   - CSV for data manipulation
@@ -62,10 +71,11 @@ Stop dreading your 1-on-1s. LifeBuffer is the flexible life tracking app that ac
 - **Context Selection**: Export single or multiple contexts
 - **Custom Templates**: Create and save report templates for recurring needs
 
-### 6. Cross-Platform Sync
-- **Universal Access**: Available on web, mobile, and desktop
-- **Real-Time Sync**: Activities and notes sync instantly across all devices
-- **Offline Support**: Basic functionality works offline, syncs when connected
+### 6. Cross-Platform Sync ⚠️ Partially Implemented
+- **Web Application**: ✅ TanStack Start web app with real-time state management
+- **Real-Time Sync**: ✅ Activities and notes sync with API backend
+- **🚧 Mobile & Desktop**: Native apps not yet developed
+- **🚧 Offline Support**: Basic functionality works offline, syncs when connected (planned)
 
 ## User Experience Flow
 
@@ -83,49 +93,62 @@ Stop dreading your 1-on-1s. LifeBuffer is the flexible life tracking app that ac
 
 ## Feature Priorities
 
-### Free Tier
-- Basic activity logging (manual entry)
-- Daily notes
-- Basic search
-- Simple text export
-- Limited history (90 days)
-- Single context
+### Free Tier (Current Implementation)
+- ✅ Basic activity logging (manual entry)
+- ✅ Daily notes with markdown support
+- ✅ Context filtering
+- ✅ Multiple contexts
+- ✅ Unlimited history
+- 🚧 Basic search (planned)
+- 🚧 Simple text export (planned)
 
-### Premium Tier
-- Voice-to-text input
-- AI categorization and related task discovery
-- Advanced search with embeddings
-- All export formats
-- Time tracking
-- Unlimited history
-- Multiple contexts
-- Custom report templates
+### Premium Tier (Future)
+- 🚧 Voice-to-text input
+- 🚧 AI categorization and related task discovery
+- 🚧 Advanced search with embeddings
+- 🚧 All export formats
+- 🚧 Time tracking
+- 🚧 Custom report templates
 
-## Screens and flow
+## Screens and flow ✅ Implemented
 
-The user is by default led the main daily activity management screen. You can use the app without authentification. If unauthenticated, data storage is made in the app JS store and browser local storage and a banner warns the users that creating an account is the only way to guarantee data is safe and synced. 
+### Authentication Flow ✅ Implemented
+- OAuth 2.0 with PKCE authentication system
+- Users can access app without authentication (data stored locally)
+- Authentication required for data persistence and sync
+- Login/callback flow integrated with Laravel Passport
 
-### Main screen
-The main screen shows the content panel to add activities and notes for the current day. The date must be shown and the user can select another date on a calendar dropdown to load the data for that other day. 
+### Main Screen ✅ Implemented
+The main screen shows the daily activity management interface with:
 
-The main action button is to create a new activity (voice or keyboard). Once done, the activity is added to the list (JS store and sent to the API). The defaut status for an activity is new.
+- **Date Navigation**: ✅ Calendar-based date picker to load different days
+- **Activity List**: ✅ Real-time list of activities with status indicators
+- **Context Filtering**: ✅ Sidebar with context selection and visual indicators
+- **Daily Notes**: ✅ Markdown-enabled notes section with click-to-edit
 
-Here are two examples of activities:
+### Activity Management ✅ Implemented
+Activities are displayed with status indicators:
+- ✅ **[x]** = Done (completed)
+- **[ ]** = New (pending)
+- **[-]** = In Progress
 
-{id - hidden} [{status}] {title} ({time})
+### Activity Interaction ✅ Implemented
+- **Status Updates**: Click activity status to open dropdown selector
+- **Edit Activities**: Click activity title to open full editing modal
+- **Auto-save**: Changes saved automatically on blur
+- **Context Assignment**: Activities can be assigned to user-defined contexts
 
-[x] Create a plan for Airbus presentation (80)
-[] Prepare one-to-one meeting with F.
-[-] Find hotel for THIS conference
----
+### UI Philosophy ✅ Implemented
+"Super powered notepad" approach with:
+- Minimal modal usage (single activity modal for complex edits)
+- Clean, distraction-free interface
+- Immediate visual feedback
+- Keyboard shortcuts for power users
 
-[x] is done. [] is new. [-] is in progress.
-
-While this is presented with a GUI, a button can enable markdown mode with just present one markdown enabled area with all the activities. If the user updates the markdown, we need to make sure we catch all changes and update matching activities.
-
-When the chheckbox for an activity is clicked, we show a selection of available status for update. If clicked on the title, then the field can be edited by the user.
-
-We really want this to fill like a super powered notepad. No complexity or dozens of modals.
+### Technical Implementation ✅ Implemented
+- **State Management**: TanStack Store for real-time updates
+- **Data Persistence**: API backend with intelligent caching
+- **User Experience**: Optimistic updates with background sync
 
 ## Success Metrics
 

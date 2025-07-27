@@ -180,4 +180,19 @@ export const api = {
         body: JSON.stringify(data),
       }),
   },
+
+  // User profile management
+  user: {
+    getProfile: (): Promise<any> => apiRequest('/api/profile'),
+    updateProfile: (data: { name: string; email: string; password?: string; password_confirmation?: string }): Promise<any> =>
+      apiRequest('/api/profile', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    deleteAccount: (data: { password: string; confirmation: string }): Promise<{ message: string }> =>
+      apiRequest('/api/account', {
+        method: 'DELETE',
+        body: JSON.stringify(data),
+      }),
+  },
 };
