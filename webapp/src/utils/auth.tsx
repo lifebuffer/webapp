@@ -2,15 +2,7 @@ import { useRouter } from "@tanstack/react-router";
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { authConfig } from "~/config/auth";
-
-interface User {
-	id: number;
-	name: string;
-	email: string;
-	email_verified_at: string | null;
-	created_at: string;
-	updated_at: string;
-}
+import type { User } from "~/utils/types";
 
 interface AuthState {
 	isAuthenticated: boolean;

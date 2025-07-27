@@ -37,7 +37,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             ActivitiesSeeder::class,
-            DaysSeeder::class
+            DaysSeeder::class,
+            ContextSeeder::class,
         ]);
     }
 }

@@ -57,10 +57,18 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the days for the user.
+     * Get the activities for the user.
      */
     public function activities(): HasMany
     {
         return $this->hasMany(Activity::class);
+    }
+
+    /**
+     * Get the contexts for the user.
+     */
+    public function contexts(): HasMany
+    {
+        return $this->hasMany(Context::class);
     }
 }

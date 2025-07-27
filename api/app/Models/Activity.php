@@ -17,7 +17,8 @@ class Activity extends Model
         'title',
         'notes',
         'status',
-        'time'
+        'time',
+        'context_id'
     ];
 
     /**
@@ -26,5 +27,13 @@ class Activity extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the context that owns the activity.
+     */
+    public function context(): BelongsTo
+    {
+        return $this->belongsTo(Context::class);
     }
 }

@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ContextController;
 
 Route::group(['middleware' => 'auth:api'], function () {
 	Route::get('/user', function (Request $request) {
@@ -12,4 +13,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 		$request->user()->token()->revoke();
 		return response()->json(['message' => 'Successfully logged out']);
 	});
+
+	// Context routes
+	Route::apiResource('contexts', ContextController::class);
 });
