@@ -20,4 +20,6 @@ Route::group(['middleware' => 'auth:api'], function () {
 
 	// Today endpoint
 	Route::get('/today', [TodayController::class, 'index']);
+	Route::get('/today/{date}', [TodayController::class, 'show']);
+	Route::get('/recent', [TodayController::class, 'recent']);
 });

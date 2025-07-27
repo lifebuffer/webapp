@@ -2,33 +2,52 @@ import { Store } from "@tanstack/react-store";
 import { api } from "~/utils/api";
 import type { Context, User, Activity, Day } from "~/utils/types";
 
+interface CachedDayData {
+	day: Day;
+	activities: Activity[];
+}
+
 interface UserState {
 	user: User | null;
 	contexts: Context[];
 	activities: Activity[];
 	currentDay: Day | null;
+	selectedDate: string; // YYYY-MM-DD format
+	dayCache: Record<string, CachedDayData>; // Cache days by date (YYYY-MM-DD)
 	loading: {
 		contexts: boolean;
 		todayData: boolean;
+		recentDays: boolean;
 	};
 	error: {
 		contexts: string | null;
 		todayData: string | null;
+		recentDays: string | null;
 	};
 }
+
+// Get today's date in YYYY-MM-DD format
+const getTodayString = () => {
+	const today = new Date();
+	return today.toISOString().split('T')[0];
+};
 
 const initialState: UserState = {
 	user: null,
 	contexts: [],
 	activities: [],
 	currentDay: null,
+	selectedDate: getTodayString(),
+	dayCache: {},
 	loading: {
 		contexts: false,
 		todayData: false,
+		recentDays: false,
 	},
 	error: {
 		contexts: null,
 		todayData: null,
+		recentDays: null,
 	},
 };
 
@@ -62,6 +81,36 @@ export const userActions = {
 			...state,
 			currentDay,
 		}));
+	},
+
+	setSelectedDate: (selectedDate: string) => {
+		userStore.setState((state: UserState) => ({
+			...state,
+			selectedDate,
+		}));
+	},
+
+	cacheDayData: (date: string, dayData: CachedDayData) => {
+		userStore.setState((state: UserState) => ({
+			...state,
+			dayCache: {
+				...state.dayCache,
+				[date]: dayData,
+			},
+		}));
+	},
+
+	cacheMultipleDays: (daysData: Array<{ date: string; data: CachedDayData }>) => {
+		userStore.setState((state: UserState) => {
+			const newCache = { ...state.dayCache };
+			daysData.forEach(({ date, data }) => {
+				newCache[date] = data;
+			});
+			return {
+				...state,
+				dayCache: newCache,
+			};
+		});
 	},
 
 	addContext: (context: Context) => {
@@ -123,6 +172,26 @@ export const userActions = {
 			error: {
 				...state.error,
 				todayData: error,
+			},
+		}));
+	},
+
+	setRecentDaysLoading: (loading: boolean) => {
+		userStore.setState((state: UserState) => ({
+			...state,
+			loading: {
+				...state.loading,
+				recentDays: loading,
+			},
+		}));
+	},
+
+	setRecentDaysError: (error: string | null) => {
+		userStore.setState((state: UserState) => ({
+			...state,
+			error: {
+				...state.error,
+				recentDays: error,
 			},
 		}));
 	},
@@ -206,6 +275,74 @@ export const userActions = {
 			userActions.setTodayDataLoading(false);
 		}
 	},
+
+	fetchDayData: async (date: string) => {
+		userActions.setSelectedDate(date);
+
+		// Check if data is already cached
+		const cachedData = userStore.state.dayCache[date];
+		if (cachedData) {
+			// Use cached data immediately
+			userActions.setCurrentDay(cachedData.day);
+			userActions.setActivities(cachedData.activities);
+			return;
+		}
+
+		// If not cached, fetch from API
+		userActions.setTodayDataLoading(true);
+		userActions.setTodayDataError(null);
+
+		try {
+			const data = await api.dayData(date);
+			
+			// Cache the fetched data
+			userActions.cacheDayData(date, {
+				day: data.day,
+				activities: data.activities,
+			});
+			
+			// Set current data
+			userActions.setCurrentDay(data.day);
+			userActions.setActivities(data.activities);
+			userActions.setContexts(data.contexts);
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : "Failed to fetch day data";
+			userActions.setTodayDataError(errorMessage);
+		} finally {
+			userActions.setTodayDataLoading(false);
+		}
+	},
+
+	fetchRecentDays: async () => {
+		userActions.setRecentDaysLoading(true);
+		userActions.setRecentDaysError(null);
+
+		try {
+			const data = await api.recentDays();
+			
+			// Prepare data for caching
+			const daysToCache = data.days.map((dayData) => ({
+				date: dayData.day.date,
+				data: {
+					day: dayData.day,
+					activities: dayData.activities,
+				},
+			}));
+			
+			// Cache all the days
+			userActions.cacheMultipleDays(daysToCache);
+			
+			// Update contexts as well
+			userActions.setContexts(data.contexts);
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : "Failed to fetch recent days";
+			userActions.setRecentDaysError(errorMessage);
+		} finally {
+			userActions.setRecentDaysLoading(false);
+		}
+	},
 };
 
 // Selectors
@@ -214,6 +351,7 @@ export const userSelectors = {
 	getContexts: () => userStore.state.contexts,
 	getActivities: () => userStore.state.activities,
 	getCurrentDay: () => userStore.state.currentDay,
+	getSelectedDate: () => userStore.state.selectedDate,
 	getContextsLoading: () => userStore.state.loading.contexts,
 	getTodayDataLoading: () => userStore.state.loading.todayData,
 	getContextsError: () => userStore.state.error.contexts,

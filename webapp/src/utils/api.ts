@@ -123,6 +123,16 @@ export interface TodayResponse {
   contexts: Context[];
 }
 
+export interface DayData {
+  day: Day;
+  activities: Activity[];
+}
+
+export interface RecentDaysResponse {
+  days: DayData[];
+  contexts: Context[];
+}
+
 export const api = {
   // Context API methods
   contexts: {
@@ -146,4 +156,10 @@ export const api = {
   
   // Today endpoint
   today: (): Promise<TodayResponse> => apiRequest('/api/today'),
+  
+  // Get data for specific date
+  dayData: (date: string): Promise<TodayResponse> => apiRequest(`/api/today/${date}`),
+  
+  // Get recent days data
+  recentDays: (): Promise<RecentDaysResponse> => apiRequest('/api/recent'),
 };

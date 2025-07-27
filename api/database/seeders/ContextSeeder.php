@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Activity;
 use App\Models\Context;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -28,6 +29,12 @@ class ContextSeeder extends Seeder
                     ['name' => $contextData['name']],
                     ['icon' => $contextData['icon']]
                 );
+            }
+
+            $userContexts = $user->contexts()->get();
+            foreach(Activity::where('user_id', $user->id)->get() as $activity) {
+                $activity->context_id = $userContexts->random()->id; // Assign a random context to each activity
+                $activity->save();
             }
         });
     }

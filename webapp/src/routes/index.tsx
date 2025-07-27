@@ -22,12 +22,22 @@ export const Route = createFileRoute("/")({
 function Home() {
 	const { isAuthenticated } = useAuth();
 	const state = useStore(userStore);
-	const { currentDay, activities, loading, error } = state;
+	const { currentDay, activities, loading, error, selectedDate } = state;
 
 	React.useEffect(() => {
-		// Fetch today's data when the dashboard loads and user is authenticated
+		// Fetch data for the selected date when the dashboard loads and user is authenticated
+		if (isAuthenticated && selectedDate) {
+			userActions.fetchDayData(selectedDate);
+		}
+	}, [isAuthenticated, selectedDate]);
+
+	React.useEffect(() => {
+		// Fetch recent days in the background after authentication
 		if (isAuthenticated) {
-			userActions.fetchTodayData();
+			// Small delay to let the initial load complete first
+			setTimeout(() => {
+				userActions.fetchRecentDays();
+			}, 1000);
 		}
 	}, [isAuthenticated]);
 
@@ -61,7 +71,12 @@ function Home() {
 				{currentDay && (
 					<Card>
 						<CardHeader>
-							<CardTitle>Today's Notes</CardTitle>
+							<CardTitle>
+								{(() => {
+									const today = new Date().toISOString().split('T')[0];
+									return selectedDate === today ? "Today's Notes" : "Notes";
+								})()}
+							</CardTitle>
 							<CardDescription>
 								{(() => {
 									// Parse the date string as local date instead of UTC
@@ -98,7 +113,11 @@ function Home() {
 						<CardTitle>Activities</CardTitle>
 						<CardDescription>
 							{activities.length}{" "}
-							{activities.length === 1 ? "activity" : "activities"} for today
+							{activities.length === 1 ? "activity" : "activities"}
+							{(() => {
+								const today = new Date().toISOString().split('T')[0];
+								return selectedDate === today ? " for today" : "";
+							})()}
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
@@ -115,7 +134,7 @@ function Home() {
 						) : activities.length === 0 ? (
 							<div className="flex items-center justify-center py-8">
 								<p className="text-sm text-muted-foreground">
-									No activities yet today.
+									No activities{selectedDate === new Date().toISOString().split('T')[0] ? " yet today" : " for this date"}.
 								</p>
 							</div>
 						) : (
@@ -132,6 +151,16 @@ function Home() {
 										>
 											{activity.status.replace("_", " ")}
 										</Badge>
+
+										{/* Context */}
+										{activity.context && (
+											<Badge
+												variant="outline"
+												className="text-center flex items-center justify-center"
+											>
+												{activity.context.icon}
+											</Badge>
+										)}
 
 										{/* Title */}
 										<div className="flex-1 min-w-0">

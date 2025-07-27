@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { useStore } from "@tanstack/react-store";
 import type * as React from "react";
 import { AppSidebar } from "~/components/app-sidebar";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
@@ -20,6 +21,7 @@ import {
 import appCss from "~/styles/app.css?url";
 import { AuthProvider } from "~/utils/auth";
 import { seo } from "~/utils/seo";
+import { userStore } from "~/stores/userStore";
 
 export const Route = createRootRoute({
 	head: () => ({
@@ -67,6 +69,18 @@ export const Route = createRootRoute({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	const state = useStore(userStore);
+	const { selectedDate } = state;
+
+	const formatSelectedDate = () => {
+		const [year, month, day] = selectedDate.split('-').map(Number);
+		const date = new Date(year, month - 1, day);
+		return date.toLocaleDateString('en-US', {
+			month: 'long',
+			year: 'numeric'
+		});
+	};
+
 	return (
 		<html lang="en">
 			<head>
@@ -86,7 +100,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 								<Breadcrumb>
 									<BreadcrumbList>
 										<BreadcrumbItem>
-											<BreadcrumbPage>October 2024</BreadcrumbPage>
+											<BreadcrumbPage>{formatSelectedDate()}</BreadcrumbPage>
 										</BreadcrumbItem>
 									</BreadcrumbList>
 								</Breadcrumb>
