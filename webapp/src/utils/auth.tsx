@@ -3,6 +3,7 @@ import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { authConfig } from "~/config/auth";
 import type { User } from "~/utils/types";
+import { userActions } from "~/stores/userStore";
 
 interface AuthState {
 	isAuthenticated: boolean;
@@ -225,6 +226,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 					user,
 					loading: false,
 				});
+				
+				// Sync user with store
+				userActions.setUser(user);
 			} else {
 				setAuthState((prev) => ({ ...prev, loading: false }));
 			}
@@ -272,6 +276,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			user: null,
 			loading: false,
 		});
+		
+		// Clear user store
+		userActions.setUser(null);
+		userActions.setContexts([]);
+		
 		router.navigate({ to: "/" });
 	};
 
@@ -293,6 +302,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			user,
 			loading: false,
 		});
+		
+		// Sync user with store
+		userActions.setUser(user);
 	};
 
 	return (
