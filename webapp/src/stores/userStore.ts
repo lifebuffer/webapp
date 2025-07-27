@@ -157,6 +157,35 @@ export const userActions = {
 		});
 	},
 
+	removeActivityFromCache: (date: string, activityId: string) => {
+		userStore.setState((state: UserState) => {
+			const cachedDay = state.dayCache[date];
+			if (!cachedDay) return state;
+
+			const updatedActivities = cachedDay.activities.filter(
+				(activity) => activity.id !== activityId,
+			);
+
+			const newCache = {
+				...state.dayCache,
+				[date]: {
+					...cachedDay,
+					activities: updatedActivities,
+				},
+			};
+
+			// Also update current activities if it's the selected date
+			const newActivities =
+				state.selectedDate === date ? updatedActivities : state.activities;
+
+			return {
+				...state,
+				dayCache: newCache,
+				activities: newActivities,
+			};
+		});
+	},
+
 	updateDayInCache: (date: string, updatedDay: Day) => {
 		userStore.setState((state: UserState) => {
 			const cachedDay = state.dayCache[date];
@@ -429,6 +458,17 @@ export const userActions = {
 		} catch (error) {
 			const errorMessage =
 				error instanceof Error ? error.message : "Failed to update day";
+			throw new Error(errorMessage);
+		}
+	},
+
+	deleteActivity: async (activityId: string, date: string) => {
+		try {
+			await api.activities.delete(activityId);
+			userActions.removeActivityFromCache(date, activityId);
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : "Failed to delete activity";
 			throw new Error(errorMessage);
 		}
 	},

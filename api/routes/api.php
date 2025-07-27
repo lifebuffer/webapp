@@ -28,6 +28,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
 	// Activity routes
 	Route::put('/activities/{id}', [ActivityController::class, 'update']);
+	Route::delete('/activities/{id}', [ActivityController::class, 'destroy']);
 
 	// Day routes
 	Route::put('/days/{date}', [DayController::class, 'update']);

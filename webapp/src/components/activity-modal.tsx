@@ -1,5 +1,5 @@
 import { useStore } from "@tanstack/react-store";
-import { AlertCircle, ChevronDown, Save, X } from "lucide-react";
+import { AlertCircle, ChevronDown, Save, Trash2, X } from "lucide-react";
 import * as React from "react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -46,6 +46,7 @@ export function ActivityModal({
 	const [formData, setFormData] = React.useState<Partial<Activity>>({});
 	const [hasUnsavedChanges, setHasUnsavedChanges] = React.useState(false);
 	const [isSaving, setIsSaving] = React.useState(false);
+	const [isDeleting, setIsDeleting] = React.useState(false);
 	const [timeInputValue, setTimeInputValue] = React.useState("");
 
 	const getStatusVariant = (status: Activity["status"]) => {
@@ -168,6 +169,20 @@ export function ActivityModal({
 		setTimeInputValue(value);
 		const parsedTime = parseTime(value);
 		handleFieldChange("time", parsedTime);
+	};
+
+	const handleDelete = async () => {
+		if (!activity) return;
+
+		setIsDeleting(true);
+		try {
+			await userActions.deleteActivity(activity.id, activity.date);
+			onOpenChange(false); // Close modal after successful deletion
+		} catch (error) {
+			console.error("Failed to delete activity:", error);
+		} finally {
+			setIsDeleting(false);
+		}
 	};
 
 	if (!activity) return null;
@@ -296,8 +311,9 @@ export function ActivityModal({
 						/>
 					</div>
 
-					{/* Save Button */}
-					<div className="pt-4">
+					{/* Action Buttons */}
+					<div className="pt-4 space-y-3">
+						{/* Save Button */}
 						<Button
 							onClick={async () => {
 								if (hasUnsavedChanges) {
@@ -305,7 +321,7 @@ export function ActivityModal({
 								}
 								handleClose();
 							}}
-							disabled={isSaving}
+							disabled={isSaving || isDeleting}
 							className={`w-full transition-all duration-300 ease-in-out ${
 								hasUnsavedChanges
 									? "bg-red-600 hover:bg-red-700 text-white"
@@ -334,6 +350,28 @@ export function ActivityModal({
 										<span className="transition-opacity duration-200">
 											Saved
 										</span>
+									</>
+								)}
+							</div>
+						</Button>
+
+						{/* Delete Button */}
+						<Button
+							onClick={handleDelete}
+							disabled={isSaving || isDeleting}
+							variant="destructive"
+							className="w-full bg-red-600 hover:bg-red-700 text-white"
+						>
+							<div className="flex items-center justify-center">
+								{isDeleting ? (
+									<>
+										<Trash2 className="h-4 w-4 mr-2 animate-pulse" />
+										<span>Deleting...</span>
+									</>
+								) : (
+									<>
+										<Trash2 className="h-4 w-4 mr-2" />
+										<span>Delete Activity</span>
 									</>
 								)}
 							</div>

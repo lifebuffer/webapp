@@ -74,4 +74,21 @@ class ActivityController extends Controller
 
         return response()->json($activity);
     }
+
+    /**
+     * Delete the specified activity.
+     */
+    public function destroy(string $id): JsonResponse
+    {
+        // Find the activity
+        $activity = Activity::findOrFail($id);
+
+        // Authorize the action
+        $this->authorize('delete', $activity);
+
+        // Delete the activity
+        $activity->delete();
+
+        return response()->json(['message' => 'Activity deleted successfully']);
+    }
 }

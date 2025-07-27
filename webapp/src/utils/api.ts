@@ -170,6 +170,10 @@ export const api = {
         method: 'PUT',
         body: JSON.stringify(data),
       }),
+    delete: (id: string): Promise<{ message: string }> =>
+      apiRequest(`/api/activities/${id}`, {
+        method: 'DELETE',
+      }),
   },
 
   // Day API methods
