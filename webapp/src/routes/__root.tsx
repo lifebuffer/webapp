@@ -1,14 +1,22 @@
 /// <reference types="vite/client" />
-import {
-	createRootRoute,
-	HeadContent,
-	Link,
-	Scripts,
-} from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import type * as React from "react";
-import { DefaultCatchBoundary } from "~/components/DefaultCatchBoundary";
-import { NotFound } from "~/components/NotFound";
+import { AppSidebar } from "~/components/app-sidebar";
+import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
+import { NotFound } from "~/components/not-found";
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbList,
+	BreadcrumbPage,
+} from "~/components/ui/breadcrumb";
+import { Separator } from "~/components/ui/separator";
+import {
+	SidebarInset,
+	SidebarProvider,
+	SidebarTrigger,
+} from "~/components/ui/sidebar";
 import appCss from "~/styles/app.css?url";
 import { AuthProvider } from "~/utils/auth";
 import { seo } from "~/utils/seo";
@@ -24,10 +32,9 @@ export const Route = createRootRoute({
 				content: "width=device-width, initial-scale=1",
 			},
 			...seo({
-				title:
-					"TanStack Start | Type-Safe, Client-First, Full-Stack React Framework",
+				title: "Lifebuffer | Your Life, Your Way",
 				description:
-					"TanStack Start is a type-safe, client-first, full-stack React framework. ",
+					"Lifebuffer is a platform for tracking your life, your way.",
 			}),
 		],
 		links: [
@@ -67,19 +74,26 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<AuthProvider>
-					<div className="flex gap-2 p-2 text-lg">
-						<Link
-							activeOptions={{ exact: true }}
-							activeProps={{
-								className: "font-bold",
-							}}
-							to="/"
-						>
-							Home
-						</Link>{" "}
-					</div>
-					<hr />
-					{children}
+					<SidebarProvider>
+						<AppSidebar />
+						<SidebarInset>
+							<header className="bg-background sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b px-4">
+								<SidebarTrigger className="-ml-1" />
+								<Separator
+									orientation="vertical"
+									className="mr-2 data-[orientation=vertical]:h-4"
+								/>
+								<Breadcrumb>
+									<BreadcrumbList>
+										<BreadcrumbItem>
+											<BreadcrumbPage>October 2024</BreadcrumbPage>
+										</BreadcrumbItem>
+									</BreadcrumbList>
+								</Breadcrumb>
+							</header>
+							<div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
+						</SidebarInset>
+					</SidebarProvider>
 					<TanStackRouterDevtools position="bottom-right" />
 				</AuthProvider>
 				<Scripts />
