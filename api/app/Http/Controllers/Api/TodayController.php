@@ -101,13 +101,19 @@ class TodayController extends Controller
     }
 
     /**
-     * Get data for the last 35 days
+     * Get data for the last 35 days (optionally from a specific date)
      */
     public function recent(Request $request): JsonResponse
     {
         $user = $request->user();
-        $endDate = Carbon::today();
-        $startDate = Carbon::today()->subDays(34); // 35 days including today
+        
+        // Allow specifying a reference date, default to server today
+        $referenceDate = $request->query('date') 
+            ? Carbon::parse($request->query('date'))
+            : Carbon::today();
+            
+        $endDate = $referenceDate;
+        $startDate = $referenceDate->copy()->subDays(34); // 35 days including reference date
 
         // Get or create day models for the date range
         $days = [];

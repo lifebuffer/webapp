@@ -1,5 +1,6 @@
 import { Store } from "@tanstack/react-store";
 import { api } from "~/utils/api";
+import { getTodayString } from "~/utils/date";
 import type { Activity, Context, Day, User } from "~/utils/types";
 
 interface CachedDayData {
@@ -27,11 +28,6 @@ interface UserState {
 	};
 }
 
-// Get today's date in YYYY-MM-DD format
-const getTodayString = () => {
-	const today = new Date();
-	return today.toISOString().split("T")[0];
-};
 
 const initialState: UserState = {
 	user: null,
@@ -357,14 +353,22 @@ export const userActions = {
 	},
 
 	fetchTodayData: async () => {
+		const todayDate = getTodayString();
+		userActions.setSelectedDate(todayDate);
 		userActions.setTodayDataLoading(true);
 		userActions.setTodayDataError(null);
 
 		try {
-			const data = await api.today();
+			const data = await api.dayData(todayDate);
 			userActions.setCurrentDay(data.day);
 			userActions.setActivities(data.activities);
 			userActions.setContexts(data.contexts);
+			
+			// Cache today's data
+			userActions.cacheDayData(todayDate, {
+				day: data.day,
+				activities: data.activities,
+			});
 		} catch (error) {
 			const errorMessage =
 				error instanceof Error ? error.message : "Failed to fetch today's data";
@@ -417,7 +421,8 @@ export const userActions = {
 		userActions.setRecentDaysError(null);
 
 		try {
-			const data = await api.recentDays();
+			const todayDate = getTodayString();
+			const data = await api.recentDays(todayDate);
 
 			// Prepare data for caching
 			const daysToCache = data.days.map((dayData) => ({

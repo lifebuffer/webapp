@@ -5,6 +5,7 @@ import * as React from "react";
 import { ActivityModal } from "~/components/activity-modal";
 import { EditableMarkdown } from "~/components/editable-markdown";
 import { RequireAuth } from "~/components/require-auth";
+import { getTodayString } from "~/utils/date";
 import { Badge } from "~/components/ui/badge";
 import {
 	Card,
@@ -106,7 +107,7 @@ function Home() {
 						<CardHeader>
 							<CardTitle>
 								{(() => {
-									const today = new Date().toISOString().split("T")[0];
+									const today = getTodayString();
 									return selectedDate === today ? "Today's Notes" : "Notes";
 								})()}
 							</CardTitle>
@@ -129,7 +130,7 @@ function Home() {
 							{filteredActivities.length}{" "}
 							{filteredActivities.length === 1 ? "activity" : "activities"}
 							{(() => {
-								const today = new Date().toISOString().split("T")[0];
+								const today = getTodayString();
 								return selectedDate === today ? " for today" : "";
 							})()}
 						</CardDescription>
@@ -149,7 +150,7 @@ function Home() {
 							<div className="flex items-center justify-center py-8">
 								<p className="text-sm text-muted-foreground">
 									{selectedContextId === null
-										? `No activities${selectedDate === new Date().toISOString().split("T")[0] ? " yet today" : " for this date"}.`
+										? `No activities${selectedDate === getTodayString() ? " yet today" : " for this date"}.`
 										: "No activities found for the selected context."}
 								</p>
 							</div>

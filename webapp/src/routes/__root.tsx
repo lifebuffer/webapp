@@ -6,6 +6,7 @@ import type * as React from "react";
 import { AppSidebar } from "~/components/app-sidebar";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
 import { NotFound } from "~/components/not-found";
+import { getTodayString } from "~/utils/date";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -73,7 +74,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 	const { selectedDate } = state;
 
 	const formatSelectedDate = () => {
-		const today = new Date().toISOString().split('T')[0];
+		const today = getTodayString();
 		
 		if (selectedDate === today) {
 			return "Today";

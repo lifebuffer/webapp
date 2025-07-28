@@ -154,14 +154,14 @@ export const api = {
       }),
   },
   
-  // Today endpoint
-  today: (): Promise<TodayResponse> => apiRequest('/api/today'),
-  
-  // Get data for specific date
+  // Get data for specific date (use this for "today" with browser date)
   dayData: (date: string): Promise<TodayResponse> => apiRequest(`/api/today/${date}`),
   
-  // Get recent days data
-  recentDays: (): Promise<RecentDaysResponse> => apiRequest('/api/recent'),
+  // Get recent days data (from specified date or today)
+  recentDays: (fromDate?: string): Promise<RecentDaysResponse> => {
+    const url = fromDate ? `/api/recent?date=${fromDate}` : '/api/recent';
+    return apiRequest(url);
+  },
 
   // Activity API methods
   activities: {
