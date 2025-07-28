@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\TodayController;
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\DayController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\ExportController;
 
 Route::group(['middleware' => 'auth:api'], function () {
 	Route::get('/user', function (Request $request) {
@@ -37,4 +38,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 	Route::get('/today', [TodayController::class, 'index']);
 	Route::get('/today/{date}', [TodayController::class, 'show']);
 	Route::get('/recent', [TodayController::class, 'recent']);
+	
+	// Export endpoint
+	Route::post('/export', [ExportController::class, 'export']);
 });

@@ -199,4 +199,54 @@ export const api = {
         body: JSON.stringify(data),
       }),
   },
+
+  // Export functionality
+  export: {
+    generate: async (data: {
+      start_date: string;
+      end_date: string;
+      context_ids: number[];
+      format: 'markdown' | 'text' | 'csv';
+      include_notes: boolean;
+    }): Promise<File> => {
+      const accessToken = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+      
+      if (!accessToken) {
+        throw new Error('No access token available');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/export`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/octet-stream',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Export failed: ${response.statusText}`);
+      }
+
+      // Extract filename from Content-Disposition header
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `lifebuffer-export-${data.start_date}-to-${data.end_date}`;
+      
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      } else {
+        // Add appropriate extension based on format
+        filename += data.format === 'csv' ? '.csv' : (data.format === 'markdown' ? '.md' : '.txt');
+      }
+
+      const blob = await response.blob();
+      
+      // Create a blob with filename metadata
+      return new File([blob], filename, { type: blob.type });
+    },
+  },
 };
