@@ -1,4 +1,4 @@
-import { BadgeCheck, ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import { BadgeCheck, ChevronsUpDown, LogOut, Settings, Palette } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 
@@ -11,6 +11,9 @@ import {
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
+	DropdownMenuSub,
+	DropdownMenuSubContent,
+	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import {
@@ -21,11 +24,13 @@ import {
 } from "~/components/ui/sidebar";
 import { useAuth } from "~/utils/auth";
 import { userStore } from "~/stores/userStore";
+import { useTheme } from "~/components/theme-provider";
 
 export function NavUser() {
 	const { isMobile } = useSidebar();
 	const { logout } = useAuth();
 	const { user } = useStore(userStore);
+	const { setTheme } = useTheme();
 
 	return (
 		<>
@@ -88,6 +93,23 @@ export function NavUser() {
 											Account
 										</Link>
 									</DropdownMenuItem>
+									<DropdownMenuSub>
+										<DropdownMenuSubTrigger>
+											<Palette />
+											Theme
+										</DropdownMenuSubTrigger>
+										<DropdownMenuSubContent>
+											<DropdownMenuItem onClick={() => setTheme("light")}>
+												Light
+											</DropdownMenuItem>
+											<DropdownMenuItem onClick={() => setTheme("dark")}>
+												Dark
+											</DropdownMenuItem>
+											<DropdownMenuItem onClick={() => setTheme("system")}>
+												System
+											</DropdownMenuItem>
+										</DropdownMenuSubContent>
+									</DropdownMenuSub>
 									{/* <DropdownMenuItem>
 										<CreditCard />
 										Billing

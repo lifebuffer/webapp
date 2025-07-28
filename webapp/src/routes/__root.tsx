@@ -23,6 +23,7 @@ import appCss from "~/styles/app.css?url";
 import { AuthProvider } from "~/utils/auth";
 import { seo } from "~/utils/seo";
 import { userStore } from "~/stores/userStore";
+import { ThemeProvider } from "~/components/theme-provider";
 
 export const Route = createRootRoute({
 	head: () => ({
@@ -98,29 +99,31 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				<AuthProvider>
-					<SidebarProvider>
-						<AppSidebar />
-						<SidebarInset>
-							<header className="bg-background sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b px-4">
-								<SidebarTrigger className="-ml-1" />
-								<Separator
-									orientation="vertical"
-									className="mr-2 data-[orientation=vertical]:h-4"
-								/>
-								<Breadcrumb>
-									<BreadcrumbList>
-										<BreadcrumbItem>
-											<BreadcrumbPage>{formatSelectedDate()}</BreadcrumbPage>
-										</BreadcrumbItem>
-									</BreadcrumbList>
-								</Breadcrumb>
-							</header>
-							<div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
-						</SidebarInset>
-					</SidebarProvider>
-					{import.meta.env.DEV && <TanStackRouterDevtools position="bottom-right" />}
-				</AuthProvider>
+				<ThemeProvider defaultTheme="system" storageKey="lifebuffer-ui-theme">
+					<AuthProvider>
+						<SidebarProvider>
+							<AppSidebar />
+							<SidebarInset>
+								<header className="bg-background sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b px-4">
+									<SidebarTrigger className="-ml-1" />
+									<Separator
+										orientation="vertical"
+										className="mr-2 data-[orientation=vertical]:h-4"
+									/>
+									<Breadcrumb>
+										<BreadcrumbList>
+											<BreadcrumbItem>
+												<BreadcrumbPage>{formatSelectedDate()}</BreadcrumbPage>
+											</BreadcrumbItem>
+										</BreadcrumbList>
+									</Breadcrumb>
+								</header>
+								<div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
+							</SidebarInset>
+						</SidebarProvider>
+						{import.meta.env.DEV && <TanStackRouterDevtools position="bottom-right" />}
+					</AuthProvider>
+				</ThemeProvider>
 				<Scripts />
 			</body>
 		</html>
