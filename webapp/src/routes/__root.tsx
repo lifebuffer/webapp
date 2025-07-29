@@ -6,7 +6,7 @@ import type * as React from "react";
 import { AppSidebar } from "~/components/app-sidebar";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
 import { NotFound } from "~/components/not-found";
-import { getTodayString } from "~/utils/date";
+import { ThemeProvider } from "~/components/theme-provider";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -19,11 +19,11 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "~/components/ui/sidebar";
+import { userStore } from "~/stores/userStore";
 import appCss from "~/styles/app.css?url";
 import { AuthProvider } from "~/utils/auth";
+import { getTodayString } from "~/utils/date";
 import { seo } from "~/utils/seo";
-import { userStore } from "~/stores/userStore";
-import { ThemeProvider } from "~/components/theme-provider";
 
 export const Route = createRootRoute({
 	head: () => ({
@@ -76,20 +76,20 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 	const formatSelectedDate = () => {
 		const today = getTodayString();
-		
+
 		if (selectedDate === today) {
 			return "Today";
 		}
-		
-		const [year, month, day] = selectedDate.split('-').map(Number);
+
+		const [year, month, day] = selectedDate.split("-").map(Number);
 		const date = new Date(year, month - 1, day);
-		
+
 		// Show full date for non-today dates
-		return date.toLocaleDateString('en-US', {
-			weekday: 'long',
-			month: 'long',
-			day: 'numeric',
-			year: 'numeric'
+		return date.toLocaleDateString("en-US", {
+			weekday: "long",
+			month: "long",
+			day: "numeric",
+			year: "numeric",
 		});
 	};
 
@@ -121,7 +121,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 								<div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
 							</SidebarInset>
 						</SidebarProvider>
-						{import.meta.env.DEV && <TanStackRouterDevtools position="bottom-right" />}
+						{import.meta.env.DEV && (
+							<TanStackRouterDevtools position="bottom-right" />
+						)}
 					</AuthProvider>
 				</ThemeProvider>
 				<Scripts />
