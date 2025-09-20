@@ -1,6 +1,7 @@
 import { useStore } from "@tanstack/react-store";
 import { AlertCircle, ChevronDown, Save, Trash2, X } from "lucide-react";
 import * as React from "react";
+import { useKeyboardShortcuts } from "~/hooks/useKeyboardShortcuts";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
@@ -53,6 +54,16 @@ export function ActivityModal({
 	const [isDeleting, setIsDeleting] = React.useState(false);
 	const [timeInputValue, setTimeInputValue] = React.useState("");
 	const [isCreating, setIsCreating] = React.useState(false);
+
+	// Refs for form fields for keyboard navigation
+	const titleRef = React.useRef<HTMLInputElement>(null);
+	const contextRef = React.useRef<HTMLButtonElement>(null);
+	const timeRef = React.useRef<HTMLInputElement>(null);
+	const notesRef = React.useRef<HTMLTextAreaElement>(null);
+	const saveButtonRef = React.useRef<HTMLButtonElement>(null);
+
+	const formFields = [titleRef, contextRef, timeRef, notesRef, saveButtonRef];
+	const [currentFieldIndex, setCurrentFieldIndex] = React.useState(0);
 
 	const getStatusVariant = (status: Activity["status"]) => {
 		switch (status) {
@@ -122,7 +133,74 @@ export function ActivityModal({
 			setTimeInputValue(formatTime(activity.time));
 			setHasUnsavedChanges(false);
 		}
+		// Reset field index when modal opens
+		setCurrentFieldIndex(0);
 	}, [activity, isCreate, state.selectedContextId]);
+
+	// Focus management
+	React.useEffect(() => {
+		if (open && formFields[currentFieldIndex]?.current) {
+			formFields[currentFieldIndex].current?.focus();
+		}
+	}, [currentFieldIndex, open]);
+
+	// Modal keyboard navigation
+	useKeyboardShortcuts([
+		{
+			key: 'ArrowUp',
+			handler: () => {
+				if (open) {
+					setCurrentFieldIndex((prev) =>
+						prev > 0 ? prev - 1 : formFields.length - 1
+					);
+				}
+			},
+		},
+		{
+			key: 'ArrowDown',
+			handler: () => {
+				if (open) {
+					setCurrentFieldIndex((prev) =>
+						prev < formFields.length - 1 ? prev + 1 : 0
+					);
+				}
+			},
+		},
+		{
+			key: 'Tab',
+			handler: () => {
+				if (open) {
+					setCurrentFieldIndex((prev) =>
+						prev < formFields.length - 1 ? prev + 1 : 0
+					);
+				}
+			},
+			preventDefault: false, // Allow default tab behavior as well
+		},
+		{
+			key: 'Enter',
+			handler: () => {
+				if (open) {
+					if (isCreate) {
+						handleCreate();
+					} else {
+						if (hasUnsavedChanges) {
+							saveActivity(true);
+						}
+						handleClose();
+					}
+				}
+			},
+		},
+		{
+			key: 'Escape',
+			handler: () => {
+				if (open) {
+					handleClose();
+				}
+			},
+		},
+	]);
 
 	const saveActivity = async (forceUpdate = false, overrideData = {}) => {
 		if (!activity || (!hasUnsavedChanges && !forceUpdate)) return;
@@ -293,11 +371,13 @@ export function ActivityModal({
 					<div className="space-y-2">
 						<Label htmlFor="title">Title</Label>
 						<Input
+							ref={titleRef}
 							id="title"
 							value={formData.title || ""}
 							onChange={(e) => handleFieldChange("title", e.target.value)}
 							onBlur={handleBlur}
 							disabled={isSaving || isCreating}
+							onFocus={() => setCurrentFieldIndex(0)}
 						/>
 					</div>
 
@@ -314,7 +394,10 @@ export function ActivityModal({
 							}}
 							disabled={isSaving || isCreating}
 						>
-							<SelectTrigger>
+							<SelectTrigger
+								ref={contextRef}
+								onFocus={() => setCurrentFieldIndex(1)}
+							>
 								<SelectValue placeholder="Select a context" />
 							</SelectTrigger>
 							<SelectContent>
@@ -332,12 +415,14 @@ export function ActivityModal({
 					<div className="space-y-2">
 						<Label htmlFor="time">Time</Label>
 						<Input
+							ref={timeRef}
 							id="time"
 							placeholder="e.g., 2h 30m or 45m"
 							value={timeInputValue}
 							onChange={(e) => handleTimeChange(e.target.value)}
 							onBlur={handleBlur}
 							disabled={isSaving || isCreating}
+							onFocus={() => setCurrentFieldIndex(2)}
 						/>
 					</div>
 
@@ -345,6 +430,7 @@ export function ActivityModal({
 					<div className="space-y-2">
 						<Label htmlFor="notes">Notes</Label>
 						<Textarea
+							ref={notesRef}
 							id="notes"
 							placeholder="Add notes about this activity..."
 							value={formData.notes || ""}
@@ -352,6 +438,7 @@ export function ActivityModal({
 							onBlur={handleBlur}
 							disabled={isSaving || isCreating}
 							rows={4}
+							onFocus={() => setCurrentFieldIndex(3)}
 						/>
 					</div>
 
@@ -359,6 +446,7 @@ export function ActivityModal({
 					<div className="pt-4 space-y-3">
 						{/* Save/Create Button */}
 						<Button
+							ref={saveButtonRef}
 							onClick={async () => {
 								if (isCreate) {
 									await handleCreate();
@@ -378,6 +466,7 @@ export function ActivityModal({
 									: "bg-green-600 hover:bg-green-700 text-white"
 							}`}
 							variant={isCreate ? "default" : hasUnsavedChanges ? "destructive" : "default"}
+							onFocus={() => setCurrentFieldIndex(4)}
 						>
 							<div className="flex items-center justify-center transition-all duration-200 ease-in-out">
 								{isCreating ? (

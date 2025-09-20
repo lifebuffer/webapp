@@ -3,6 +3,7 @@ import { useStore } from "@tanstack/react-store";
 import { Clock, FileText, Plus } from "lucide-react";
 import * as React from "react";
 import { ActivityModal } from "~/components/activity-modal";
+import { DeleteActivityModal } from "~/components/delete-activity-modal";
 import { EditableMarkdown } from "~/components/editable-markdown";
 import { RequireAuth } from "~/components/require-auth";
 import { getTodayString } from "~/utils/date";
@@ -34,12 +35,15 @@ function Home() {
 		error,
 		selectedDate,
 		selectedContextId,
+		selectedActivityId,
 	} = state;
 
 	const [selectedActivity, setSelectedActivity] =
 		React.useState<Activity | null>(null);
 	const [isModalOpen, setIsModalOpen] = React.useState(false);
 	const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+	const [activityToDelete, setActivityToDelete] = React.useState<Activity | null>(null);
 
 	// Filter activities by selected context
 	const filteredActivities = React.useMemo(() => {
@@ -68,12 +72,85 @@ function Home() {
 		}
 	}, [isAuthenticated]);
 
-	// Register keyboard shortcuts
+	// Check if any modal is open (we'll need to add keyboard shortcuts modal to this check)
+	const isAnyModalOpen = isModalOpen || isCreateModalOpen || isDeleteModalOpen;
+
+	// Register keyboard shortcuts - only when no modals are open
 	useKeyboardShortcuts([
 		{
 			key: 'c',
 			handler: () => {
-				setIsCreateModalOpen(true);
+				if (!isAnyModalOpen) {
+					setIsCreateModalOpen(true);
+				}
+			},
+		},
+		{
+			key: 'ArrowUp',
+			handler: () => {
+				if (!isAnyModalOpen) {
+					userActions.navigateToPreviousActivity();
+				}
+			},
+		},
+		{
+			key: 'ArrowDown',
+			handler: () => {
+				if (!isAnyModalOpen) {
+					userActions.navigateToNextActivity();
+				}
+			},
+		},
+		{
+			key: 'ArrowLeft',
+			handler: () => {
+				if (!isAnyModalOpen) {
+					userActions.navigateToPreviousDay();
+				}
+			},
+		},
+		{
+			key: 'ArrowRight',
+			handler: () => {
+				if (!isAnyModalOpen) {
+					userActions.navigateToNextDay();
+				}
+			},
+		},
+		{
+			key: 'e',
+			handler: () => {
+				if (!isAnyModalOpen) {
+					const selectedActivity = filteredActivities.find(activity => activity.id === selectedActivityId);
+					if (selectedActivity) {
+						setSelectedActivity(selectedActivity);
+						setIsModalOpen(true);
+					}
+				}
+			},
+		},
+		{
+			key: 'd',
+			handler: () => {
+				if (!isAnyModalOpen) {
+					const selectedActivity = filteredActivities.find(activity => activity.id === selectedActivityId);
+					if (selectedActivity) {
+						setActivityToDelete(selectedActivity);
+						setIsDeleteModalOpen(true);
+					}
+				}
+			},
+		},
+		{
+			key: 'Escape',
+			handler: () => {
+				if (isModalOpen) {
+					setIsModalOpen(false);
+				} else if (isCreateModalOpen) {
+					setIsCreateModalOpen(false);
+				} else if (isDeleteModalOpen) {
+					setIsDeleteModalOpen(false);
+				}
 			},
 		},
 	]);
@@ -181,13 +258,19 @@ function Home() {
 							</div>
 						) : (
 							<div className="space-y-2">
-								{filteredActivities.map((activity) => (
+								{filteredActivities.map((activity) => {
+									const isSelected = selectedActivityId === activity.id;
+									return (
 									// biome-ignore lint/a11y/useSemanticElements: <TODO: fix this>
 									<div
 										key={activity.id}
 										role="button"
 										tabIndex={0}
-										className="flex items-center gap-4 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer"
+										className={`flex items-center gap-4 p-3 rounded-lg border transition-colors cursor-pointer ${
+											isSelected
+												? "bg-primary/10 border-primary ring-2 ring-primary/20"
+												: "bg-card hover:bg-accent/50"
+										}`}
 										onClick={() => handleActivityClick(activity)}
 										onKeyDown={(e) => {
 											if (e.key === "Enter" || e.key === " ") {
@@ -234,7 +317,8 @@ function Home() {
 											</div>
 										)}
 									</div>
-								))}
+								);
+								})}
 							</div>
 						)}
 					</CardContent>
@@ -257,6 +341,13 @@ function Home() {
 						// Optionally handle the newly created activity
 						console.log('Activity created:', newActivity);
 					}}
+				/>
+
+				{/* Delete Activity Modal */}
+				<DeleteActivityModal
+					activity={activityToDelete}
+					open={isDeleteModalOpen}
+					onOpenChange={setIsDeleteModalOpen}
 				/>
 			</div>
 		</RequireAuth>

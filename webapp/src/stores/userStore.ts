@@ -1,6 +1,6 @@
 import { Store } from "@tanstack/react-store";
 import { api } from "~/utils/api";
-import { getTodayString } from "~/utils/date";
+import { getTodayString, getLocalDateString } from "~/utils/date";
 import type { Activity, Context, Day, User } from "~/utils/types";
 
 interface CachedDayData {
@@ -15,6 +15,7 @@ interface UserState {
 	currentDay: Day | null;
 	selectedDate: string; // YYYY-MM-DD format
 	selectedContextId: number | null; // null means "All" contexts
+	selectedActivityId: string | null; // For keyboard navigation
 	dayCache: Record<string, CachedDayData>; // Cache days by date (YYYY-MM-DD)
 	loading: {
 		contexts: boolean;
@@ -36,6 +37,7 @@ const initialState: UserState = {
 	currentDay: null,
 	selectedDate: getTodayString(),
 	selectedContextId: null, // Show all contexts by default
+	selectedActivityId: null, // No activity selected by default
 	dayCache: {},
 	loading: {
 		contexts: false,
@@ -68,10 +70,17 @@ export const userActions = {
 	},
 
 	setActivities: (activities: Activity[]) => {
-		userStore.setState((state: UserState) => ({
-			...state,
-			activities,
-		}));
+		userStore.setState((state: UserState) => {
+			// If no activity is selected and we have activities, select the first one
+			const shouldSelectFirst = !state.selectedActivityId && activities.length > 0;
+			const selectedActivityId = shouldSelectFirst ? activities[0].id : state.selectedActivityId;
+
+			return {
+				...state,
+				activities,
+				selectedActivityId,
+			};
+		});
 	},
 
 	setCurrentDay: (currentDay: Day | null) => {
@@ -85,6 +94,7 @@ export const userActions = {
 		userStore.setState((state: UserState) => ({
 			...state,
 			selectedDate,
+			selectedActivityId: null, // Clear selection when changing dates
 		}));
 	},
 
@@ -92,6 +102,13 @@ export const userActions = {
 		userStore.setState((state: UserState) => ({
 			...state,
 			selectedContextId,
+		}));
+	},
+
+	setSelectedActivityId: (selectedActivityId: string | null) => {
+		userStore.setState((state: UserState) => ({
+			...state,
+			selectedActivityId,
 		}));
 	},
 
@@ -525,6 +542,65 @@ export const userActions = {
 			throw new Error(errorMessage);
 		}
 	},
+
+	// Navigation actions
+	navigateToNextActivity: () => {
+		userStore.setState((state: UserState) => {
+			const filteredActivities = state.selectedContextId === null
+				? state.activities
+				: state.activities.filter(activity => activity.context_id === state.selectedContextId);
+
+			if (filteredActivities.length === 0) return state;
+
+			const currentIndex = state.selectedActivityId
+				? filteredActivities.findIndex(activity => activity.id === state.selectedActivityId)
+				: -1;
+
+			const nextIndex = currentIndex < filteredActivities.length - 1 ? currentIndex + 1 : 0;
+			const nextActivity = filteredActivities[nextIndex];
+
+			return {
+				...state,
+				selectedActivityId: nextActivity.id,
+			};
+		});
+	},
+
+	navigateToPreviousActivity: () => {
+		userStore.setState((state: UserState) => {
+			const filteredActivities = state.selectedContextId === null
+				? state.activities
+				: state.activities.filter(activity => activity.context_id === state.selectedContextId);
+
+			if (filteredActivities.length === 0) return state;
+
+			const currentIndex = state.selectedActivityId
+				? filteredActivities.findIndex(activity => activity.id === state.selectedActivityId)
+				: 0;
+
+			const prevIndex = currentIndex > 0 ? currentIndex - 1 : filteredActivities.length - 1;
+			const prevActivity = filteredActivities[prevIndex];
+
+			return {
+				...state,
+				selectedActivityId: prevActivity.id,
+			};
+		});
+	},
+
+	navigateToNextDay: () => {
+		const currentDate = new Date(userStore.state.selectedDate);
+		currentDate.setDate(currentDate.getDate() + 1);
+		const nextDate = getLocalDateString(currentDate);
+		userActions.fetchDayData(nextDate);
+	},
+
+	navigateToPreviousDay: () => {
+		const currentDate = new Date(userStore.state.selectedDate);
+		currentDate.setDate(currentDate.getDate() - 1);
+		const prevDate = getLocalDateString(currentDate);
+		userActions.fetchDayData(prevDate);
+	},
 };
 
 // Selectors
@@ -534,10 +610,16 @@ export const userSelectors = {
 	getActivities: () => userStore.state.activities,
 	getCurrentDay: () => userStore.state.currentDay,
 	getSelectedDate: () => userStore.state.selectedDate,
+	getSelectedActivityId: () => userStore.state.selectedActivityId,
 	getContextsLoading: () => userStore.state.loading.contexts,
 	getTodayDataLoading: () => userStore.state.loading.todayData,
 	getContextsError: () => userStore.state.error.contexts,
 	getTodayDataError: () => userStore.state.error.todayData,
 	getContextById: (id: number) =>
 		userStore.state.contexts.find((context: Context) => context.id === id),
+	getSelectedActivity: () => {
+		const selectedActivityId = userStore.state.selectedActivityId;
+		if (!selectedActivityId) return null;
+		return userStore.state.activities.find((activity) => activity.id === selectedActivityId) || null;
+	},
 };
