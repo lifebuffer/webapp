@@ -41,6 +41,7 @@ async function refreshAccessToken(): Promise<void> {
           client_secret: '', // Empty for public clients
           scope: SCOPES,
         }),
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -90,6 +91,7 @@ async function apiRequest<T>(
       'Authorization': `Bearer ${accessToken}`,
       ...options.headers,
     },
+    credentials: 'include',
   });
 
   // Handle 401 Unauthorized
@@ -191,6 +193,7 @@ export const api = {
           // Don't set Content-Type for FormData - browser will set it with boundary
         },
         body: formData,
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -257,6 +260,7 @@ export const api = {
           'Authorization': `Bearer ${accessToken}`,
         },
         body: JSON.stringify(data),
+        credentials: 'include',
       });
 
       if (!response.ok) {

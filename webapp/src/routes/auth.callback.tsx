@@ -62,6 +62,7 @@ function AuthCallback() {
 						Accept: "application/json",
 					},
 					body: formData.toString(),
+					credentials: "include",
 				});
 				const responseText = await tokenResponse.text();
 
