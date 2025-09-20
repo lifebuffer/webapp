@@ -1,0 +1,33 @@
+applications:
+  lifebuffer:
+    type: "nodejs:22"
+    build:
+      flavor: none
+    dependencies:
+      nodejs:
+        pnpm: 10.13.1
+    mounts:
+      "/.npm":
+        source: "storage"
+        source_path: "npm"
+      "/.cache":
+        source: "storage"
+        source_path: "cache"
+    hooks:
+      build: |
+        pnpm install
+        pnpm run build
+    web:
+      locations:
+        "/":
+          root: "dist"
+          index: [index.html]
+      commands:
+        start: "sleep infinity"
+      upstream:
+        socket_family: tcp
+
+routes:
+  "https://{default}/":
+    type: upstream
+    upstream: lifebuffer:http

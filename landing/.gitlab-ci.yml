@@ -1,0 +1,33 @@
+image: docker:24.0.2
+
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+
+services:
+  - docker:24.0.2-dind
+
+before_script:
+  - docker info
+
+build:
+  stage: build
+  script:
+    - mkdir ~/.ssh
+    - touch ~/.ssh/config
+    - echo "HOST *" > ~/.ssh/config
+    - echo "StrictHostKeyChecking no" >> ~/.ssh/config
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+    - apk update
+    - apk upgrade
+    - apk add git
+
+production:
+  stage: build
+  only:
+    - "main"
+  dependencies:
+    - build
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+    - docker build -f ./Dockerfile --pull --cache-from registry.gitlab.com/$CI_PROJECT_PATH/lifebuffer-landing:latest -t registry.gitlab.com/$CI_PROJECT_PATH/lifebuffer-landing:latest .
+    - docker push registry.gitlab.com/$CI_PROJECT_PATH/lifebuffer-landing:latest
