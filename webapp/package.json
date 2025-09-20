@@ -1,5 +1,5 @@
 {
-	"name": "tanstack-start-example-basic",
+	"name": "lifebuffer-webapp",
 	"private": true,
 	"sideEffects": false,
 	"type": "module",
@@ -43,7 +43,6 @@
 		"react-day-picker": "^9.8.1",
 		"react-dom": "^19.0.0",
 		"react-markdown": "^10.1.0",
-		"react-store": "link:@tanstack/store/react-store",
 		"recharts": "2.15.4",
 		"sonner": "^2.0.6",
 		"tailwind-merge": "^2.6.0",
