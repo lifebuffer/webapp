@@ -1,0 +1,52 @@
+#APP_URL=http://api.lifebuffer.test
+
+export APP_LOCALE="en"
+export APP_FALLBACK_LOCALE="en"
+export APP_FAKER_LOCALE="en_US"
+
+export APP_MAINTENANCE_DRIVER="file"
+# APP_MAINTENANCE_STORE=database
+
+export BCRYPT_ROUNDS="12"
+
+export LOG_CHANNEL="stack"
+export LOG_STACK="single"
+export LOG_DEPRECATIONS_CHANNEL="null"
+export LOG_LEVEL="debug"
+
+export DB_HOST="${DATABASE_HOST}"
+export DB_PORT="${DATABASE_PORT}"
+export DB_PATH="${DATABASE_PATH}"
+export DB_USERNAME="${DATABASE_USERNAME}"
+export DB_PASSWORD="${DATABASE_PASSWORD}"
+export DB_SCHEME="${DATABASE_SCHEME}"
+export DATABASE_URL="${DATABASE_SCHEME}://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_PATH}"
+
+export SESSION_DRIVER="redis"
+export SESSION_LIFETIME="120"
+export SESSION_ENCRYPT="false"
+export SESSION_PATH="/"
+export SESSION_DOMAIN=".lifebuffer.test"
+
+export BROADCAST_CONNECTION="redis"
+export FILESYSTEM_DISK="local"
+export QUEUE_CONNECTION="redis"
+
+export CACHE_STORE="redis"
+# CACHE_PREFIX=
+
+export REDIS_CLIENT="phpredis"
+export REDIS_HOST="${REDIS_HOST}"
+export REDIS_PASSWORD=null
+export REDIS_PORT="${REDIS_PORT}"
+
+export MAIL_MAILER="smtp"
+export MAIL_SCHEME=null
+export MAIL_HOST="${PLATFORM_SMTP_HOST}"
+export MAIL_PORT=25
+export MAIL_USERNAME=null
+export MAIL_PASSWORD=null
+export MAIL_FROM_ADDRESS="hello@lifebuffer.com"
+export MAIL_FROM_NAME="LifeBuffer"
+
+export VITE_APP_NAME="LifeBuffer"

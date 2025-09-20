@@ -1,0 +1,77 @@
+applications:
+  api:
+    source:
+      root: "/api"
+    type: "php:8.2"
+    relationships:
+      database: "postgresql:postgresql"
+      redis: "redis:redis"
+    mounts:
+      "/.config":
+        source: "storage"
+        source_path: "config"
+      "bootstrap/cache":
+        source: "storage"
+        source_path: "cache"
+      "storage":
+        source: "storage"
+        source_path: "storage"
+    web:
+      locations:
+        "/":
+          passthru: "/index.php"
+          root: "api/public"
+    build:
+      flavor: none
+    dependencies:
+      php:
+        composer/composer: "^2"
+    hooks:
+      build: |
+        set -eux
+        composer --no-ansi --no-interaction install --no-progress --prefer-dist --optimize-autoloader --no-dev
+      deploy: |
+        set -eux
+        mkdir -p storage/framework/sessions
+        mkdir -p storage/framework/cache
+        mkdir -p storage/framework/views
+        php artisan migrate --force
+        php artisan optimize:clear
+      # post_deploy: |
+  webapp:
+    source:
+      root: "/webapp"
+    type: "nodejs:22"
+    container_profile: HIGH_MEMORY
+    mounts:
+      "/.npm":
+        source: "storage"
+        source_path: "npm"
+    hooks:
+      build: |
+        set -eux
+        npm i
+        npm run build
+    web:
+      commands:
+        start: "npx next start -p $PORT"
+      upstream:
+        socket_family: tcp
+      locations:
+        "/":
+          root: ""
+          passthru: true
+services:
+  postgresql:
+    type: postgresql:17
+
+  redis:
+    type: redis:7.0
+
+routes:
+  "https://app.{default}/":
+    type: upstream
+    upstream: "webapp:http"
+  "https://api.{default}/":
+    type: upstream
+    upstream: "api:http"
