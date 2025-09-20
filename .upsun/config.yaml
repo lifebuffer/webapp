@@ -35,9 +35,6 @@ applications:
           root: "api/public"
     build:
       flavor: none
-    dependencies:
-      php:
-        composer/composer: "^2"
     hooks:
       build: |
         set -eux
