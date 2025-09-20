@@ -2,19 +2,20 @@ applications:
   api:
     source:
       root: "/api"
+    type: "composable:25.05"
     stack:
       - "php@8.4":
-        extensions:
-          - apcu
-          - sodium
-          - xsl
-          - pdo_pgsql
-          - redis
-          - mbstring
-          - gd
-          - exif
-          - fileinfo
-          - iconv
+          extensions:
+            - apcu
+            - sodium
+            - xsl
+            - pdo_pgsql
+            - redis
+            - mbstring
+            - gd
+            - exif
+            - fileinfo
+            - iconv
     relationships:
       database: "postgresql:postgresql"
       redis: "redis:redis"
