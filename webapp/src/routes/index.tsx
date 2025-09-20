@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
-import { Clock, FileText, Plus } from "lucide-react";
+import { Clock, FileText, Keyboard, Mic, Plus } from "lucide-react";
 import * as React from "react";
 import { ActivityModal } from "~/components/activity-modal";
 import { DeleteActivityModal } from "~/components/delete-activity-modal";
@@ -8,6 +8,7 @@ import { EditableMarkdown } from "~/components/editable-markdown";
 import { RequireAuth } from "~/components/require-auth";
 import { VoiceRecordingModal } from "~/components/voice-recording-modal";
 import { getTodayString } from "~/utils/date";
+import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { useKeyboardShortcuts } from "~/hooks/useKeyboardShortcuts";
@@ -335,6 +336,29 @@ function Home() {
 						)}
 					</CardContent>
 				</Card>
+
+				{/* Keyboard Shortcuts Callout */}
+				<Alert className="mt-4 bg-muted/50">
+					<Keyboard className="h-4 w-4" />
+					<AlertDescription className="flex flex-wrap items-center gap-3">
+						<span className="font-medium">Quick Actions:</span>
+						<span className="flex items-center gap-1">
+							Press <kbd className="px-2 py-1 text-xs font-semibold bg-background rounded border">C</kbd> to create a new task
+						</span>
+						<span className="text-muted-foreground">•</span>
+						<span className="flex items-center gap-1">
+							Press <kbd className="px-2 py-1 text-xs font-semibold bg-background rounded border">T</kbd> to record by voice
+						</span>
+						<span className="text-muted-foreground">•</span>
+						<span className="flex items-center gap-1">
+							Use <kbd className="px-2 py-1 text-xs font-semibold bg-background rounded border">↑</kbd> <kbd className="px-2 py-1 text-xs font-semibold bg-background rounded border">↓</kbd> to navigate activities
+						</span>
+						<span className="text-muted-foreground">•</span>
+						<span className="flex items-center gap-1">
+							Use <kbd className="px-2 py-1 text-xs font-semibold bg-background rounded border">←</kbd> <kbd className="px-2 py-1 text-xs font-semibold bg-background rounded border">→</kbd> to change days
+						</span>
+					</AlertDescription>
+				</Alert>
 
 				{/* Edit Activity Modal */}
 				<ActivityModal
