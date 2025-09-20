@@ -1,5 +1,5 @@
 #APP_URL=http://api.lifebuffer.test
-
+export APP_URL="$(echo $PLATFORM_ROUTES | base64 --decode | jq '.[] | select(.upstream == "api") | .production_url')"
 export APP_LOCALE="en"
 export APP_FALLBACK_LOCALE="en"
 export APP_FAKER_LOCALE="en_US"
