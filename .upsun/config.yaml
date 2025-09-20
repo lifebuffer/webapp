@@ -2,7 +2,19 @@ applications:
   api:
     source:
       root: "/api"
-    type: "php:8.2"
+    stack:
+      - "php@8.4":
+        extensions:
+          - apcu
+          - sodium
+          - xsl
+          - pdo_pgsql
+          - redis
+          - mbstring
+          - gd
+          - exif
+          - fileinfo
+          - iconv
     relationships:
       database: "postgresql:postgresql"
       redis: "redis:redis"
