@@ -25,7 +25,6 @@ export SESSION_DRIVER="redis"
 export SESSION_LIFETIME="120"
 export SESSION_ENCRYPT="false"
 export SESSION_PATH="/"
-export SESSION_DOMAIN=".lifebuffer.test"
 
 export BROADCAST_CONNECTION="redis"
 export FILESYSTEM_DISK="local"
