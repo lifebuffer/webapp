@@ -33,6 +33,15 @@ class DatabaseSeeder extends Seeder
             'revoked' => false,
         ]);
 
+        Client::create([
+            'id' => '9ebd8f82-e3fe-4205-87ad-bfe10e03cdd8',
+            'name' => 'lifebuffer-cli',
+            'secret' => null,
+            'redirect_uris' => ['http://localhost:8080/callback'],
+            'grant_types' => ['authorization_code','refresh_token'],
+            'revoked' => false,
+        ]);
+
         User::factory(10)->create();
 
         $this->call([
