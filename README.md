@@ -10,7 +10,9 @@ LifeBuffer is designed for knowledge workers who need to track accomplishments f
 
 - **Backend**: Laravel 12 (PHP 8.2+)
 - **Frontend**: TanStack Start with React 19
-- **Database**: SQLite (default)
+- **Landing Page**: React 19 with Vite and Tailwind CSS v4
+- **Database**: PostgreSQL (production), SQLite (development)
+- **Deployment**: Upsun cloud platform
 - **Styling**: Tailwind CSS
 
 ## Quick Start
@@ -106,9 +108,79 @@ cd webapp
 tsc --noEmit
 ```
 
+## Project Structure
+
+LifeBuffer is organized as a monorepo with three main applications:
+
+- **`/api`** - Laravel backend API with OAuth authentication and OpenAI integration
+- **`/webapp`** - React frontend application built with TanStack Start
+- **`/landing`** - Marketing landing page built with React and Vite
+
+## Deployment
+
+### Upsun Cloud Platform
+
+LifeBuffer is deployed on [Upsun](https://upsun.com), a modern Platform-as-a-Service that provides:
+
+- **Multi-app orchestration**: API, webapp, and landing page deployed together
+- **Managed services**: PostgreSQL database and Redis cache
+- **Auto-scaling**: Containers scale based on demand
+- **SSL certificates**: Automatic HTTPS for all domains
+- **Branch deployments**: Each Git branch gets its own environment
+
+#### Production URLs
+- **Landing Page**: `https://lifebuffer.com` (marketing site)
+- **Web App**: `https://app.lifebuffer.com` (main application)
+- **API**: `https://api.lifebuffer.com` (backend services)
+
+#### Deployment Configuration
+
+The deployment is managed by `.upsun/config.yaml` which defines:
+
+```yaml
+applications:
+  api:          # Laravel backend (PHP 8.4)
+  webapp:       # React frontend (Node.js 22)
+  landing:      # Marketing site (Node.js 22)
+
+services:
+  postgresql:   # Database (PostgreSQL 17)
+  redis:        # Cache and sessions (Redis 7.0)
+
+routes:
+  # Automatic HTTPS with domain routing
+```
+
+#### Environment Variables
+
+Production configuration uses Upsun's environment variables:
+- Database connection via `$DATABASE_*` variables
+- Redis connection via `$REDIS_*` variables
+- Session domain automatically configured
+- HTTPS enforced with secure cookies
+
+#### Deployment Process
+
+1. **Push to Git**: Changes trigger automatic deployment
+2. **Build Phase**: Each app builds in parallel (Composer, NPM, PNPM)
+3. **Deploy Phase**: Database migrations and optimization
+4. **Health Checks**: Automatic verification before routing traffic
+
+### Local Development vs Production
+
+| Aspect | Local Development | Production (Upsun) |
+|--------|------------------|-------------------|
+| Database | SQLite | PostgreSQL 17 |
+| Sessions | File storage | Redis 7.0 |
+| HTTPS | HTTP only | Enforced HTTPS |
+| Domain | `.test` domains | Production domains |
+| Environment | Laravel Sail | Upsun containers |
+
 ## Development
 
 See [CLAUDE.md](./CLAUDE.md) for detailed development guidelines and [PRODUCT_SPECS.md](./PRODUCT_SPECS.md) for full product specifications.
+
+For the landing page specifically, see [landing/README.md](./landing/README.md) for setup and development instructions.
 
 ## License
 

@@ -8,7 +8,9 @@ LifeBuffer is a cross-platform life tracking app with:
 
 - **Backend API**: Laravel 12 (PHP 8.2+) - Located in `/api`
 - **Frontend Web App**: TanStack Start with React 19 - Located in `/webapp`
+- **Landing Page**: React 19 with Vite and Tailwind CSS v4 - Located in `/landing`
 - **Key Features**: Activity logging, voice input, AI categorization, flexible reporting
+- **Deployment**: Upsun cloud platform with multi-app orchestration
 
 ## Essential Commands
 
@@ -77,13 +79,36 @@ tsc --noEmit
 pnpm start
 ```
 
+### Landing Page Development
+
+```bash
+# In /landing directory
+cd landing
+
+# Install dependencies
+pnpm install
+
+# Development server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Preview production build
+pnpm preview
+
+# Type checking and linting
+tsc --noEmit
+pnpm lint
+```
+
 ## Architecture Overview
 
 ### API Architecture (Laravel)
 
 - **MVC Pattern**: Controllers in `app/Http/Controllers`, Models in `app/Models`
 - **API Routes**: Define in `routes/api.php` (create if not exists)
-- **Database**: Migrations in `database/migrations`, uses SQLite by default
+- **Database**: PostgreSQL (production), SQLite (development)
 - **Queue System**: Background job processing configured
 - **Real-time Logs**: Laravel Pail for development logging
 
@@ -95,6 +120,14 @@ pnpm start
 - **Styling**: Tailwind CSS v3 (note: not v4 as specified in rules)
 - **Type Safety**: Strict TypeScript configuration enabled
 - **Environment Variables**: Configured via `.env` file with `VITE_` prefix
+
+### Landing Page Architecture (React + Vite)
+
+- **Routing**: TanStack Router for type-safe routing
+- **Components**: Shadcn/ui component library in `src/components/`
+- **Styling**: Tailwind CSS v4 with utility-first approach
+- **Type Safety**: Strict TypeScript configuration enabled
+- **Build Tool**: Vite for fast development and optimized production builds
 
 ## Development Guidelines
 
@@ -302,9 +335,31 @@ cd webapp
 tsc --noEmit
 ```
 
+## Deployment (Upsun Platform)
+
+### Production Architecture
+
+LifeBuffer is deployed on Upsun cloud platform with the following structure:
+
+```yaml
+applications:
+  api:          # Laravel backend (PHP 8.4)
+  webapp:       # React frontend (Node.js 22)
+  landing:      # Marketing site (Node.js 22)
+
+services:
+  postgresql:   # Database (PostgreSQL 17)
+  redis:        # Cache and sessions (Redis 7.0)
+```
+
+### Production URLs
+- **Landing Page**: `https://lifebuffer.com` (marketing site)
+- **Web App**: `https://app.lifebuffer.com` (main application)
+- **API**: `https://api.lifebuffer.com` (backend services)
+
 ## Environment Configuration
 
-### API (.env)
+### API (.env - Development)
 
 Key variables to configure:
 
@@ -313,11 +368,25 @@ Key variables to configure:
 - `QUEUE_CONNECTION`
 - `OPENAI_API_KEY` - Required for voice recording feature (Whisper + GPT-4o-mini)
 
+### API (.environment - Production/Upsun)
+
+Production uses Upsun environment variables:
+- Database: `$DATABASE_*` variables (PostgreSQL)
+- Redis: `$REDIS_*` variables
+- Sessions: Redis-backed with secure cookies
+- HTTPS: Enforced across all domains
+
 ### Web App
 
 - Configure API endpoint in environment
 - Set up authentication tokens
 - Configure feature flags
+
+### Landing Page
+
+- Static site served from `/landing/dist`
+- No environment variables required
+- Optimized build with Vite
 
 ## Component Architecture
 
@@ -358,6 +427,42 @@ Key variables to configure:
 - **Cache-first approach**: Immediate UI updates with background sync
 - **Optimistic updates**: UI responds instantly, API syncs in background
 - **Error handling**: Graceful error states with user feedback
+
+### Landing Page Structure
+
+The landing page is located in `/landing` and serves as the marketing website:
+
+```
+landing/
+├── src/
+│   ├── routes/          # TanStack Router pages
+│   │   ├── __root.tsx   # Layout and navigation
+│   │   ├── terms.tsx    # Terms of service
+│   │   ├── privacy.tsx  # Privacy policy
+│   │   └── security.tsx # Security information
+│   ├── components/      # React components
+│   │   ├── UseCases.tsx
+│   │   ├── SocialProof.tsx
+│   │   ├── ProblemSolution.tsx
+│   │   └── Security.tsx
+│   └── assets/          # Images and static files
+├── public/              # Static assets (screenshots, icons)
+├── dist/                # Built files (served in production)
+└── marketing-specs.md   # Marketing content specifications
+```
+
+**Key Features:**
+- React 19 with TanStack Router for type-safe routing
+- Tailwind CSS v4 for modern styling
+- Shadcn/ui components for consistent design
+- Responsive design optimized for all devices
+- Marketing content focused on professional users
+- Legal pages (terms, privacy, security)
+
+**Deployment:**
+- Built with Vite during Upsun deployment
+- Served as static files from `/dist` directory
+- Available at `https://lifebuffer.com`
 
 ## Common Tasks
 
