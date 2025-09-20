@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
-import { Clock, FileText } from "lucide-react";
+import { Clock, FileText, Plus } from "lucide-react";
 import * as React from "react";
 import { ActivityModal } from "~/components/activity-modal";
 import { EditableMarkdown } from "~/components/editable-markdown";
 import { RequireAuth } from "~/components/require-auth";
 import { getTodayString } from "~/utils/date";
 import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { useKeyboardShortcuts } from "~/hooks/useKeyboardShortcuts";
 import {
 	Card,
 	CardContent,
@@ -37,6 +39,7 @@ function Home() {
 	const [selectedActivity, setSelectedActivity] =
 		React.useState<Activity | null>(null);
 	const [isModalOpen, setIsModalOpen] = React.useState(false);
+	const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
 
 	// Filter activities by selected context
 	const filteredActivities = React.useMemo(() => {
@@ -64,6 +67,16 @@ function Home() {
 			}, 1000);
 		}
 	}, [isAuthenticated]);
+
+	// Register keyboard shortcuts
+	useKeyboardShortcuts([
+		{
+			key: 'c',
+			handler: () => {
+				setIsCreateModalOpen(true);
+			},
+		},
+	]);
 
 	const getStatusBadgeVariant = (status: Activity["status"]) => {
 		switch (status) {
@@ -125,15 +138,27 @@ function Home() {
 				{/* Activities Section */}
 				<Card>
 					<CardHeader>
-						<CardTitle>Activities</CardTitle>
-						<CardDescription>
-							{filteredActivities.length}{" "}
-							{filteredActivities.length === 1 ? "activity" : "activities"}
-							{(() => {
-								const today = getTodayString();
-								return selectedDate === today ? " for today" : "";
-							})()}
-						</CardDescription>
+						<div className="flex items-start justify-between">
+							<div>
+								<CardTitle>Activities</CardTitle>
+								<CardDescription>
+									{filteredActivities.length}{" "}
+									{filteredActivities.length === 1 ? "activity" : "activities"}
+									{(() => {
+										const today = getTodayString();
+										return selectedDate === today ? " for today" : "";
+									})()}
+								</CardDescription>
+							</div>
+							<Button
+								onClick={() => setIsCreateModalOpen(true)}
+								size="sm"
+								className="flex items-center gap-2"
+							>
+								<Plus className="h-4 w-4" />
+								New activity
+							</Button>
+						</div>
 					</CardHeader>
 					<CardContent>
 						{loading.todayData ? (
@@ -215,10 +240,23 @@ function Home() {
 					</CardContent>
 				</Card>
 
+				{/* Edit Activity Modal */}
 				<ActivityModal
 					activity={selectedActivity}
 					open={isModalOpen}
 					onOpenChange={setIsModalOpen}
+				/>
+
+				{/* Create Activity Modal */}
+				<ActivityModal
+					activity={null}
+					open={isCreateModalOpen}
+					onOpenChange={setIsCreateModalOpen}
+					isCreate
+					onCreated={(newActivity) => {
+						// Optionally handle the newly created activity
+						console.log('Activity created:', newActivity);
+					}}
 				/>
 			</div>
 		</RequireAuth>

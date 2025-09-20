@@ -467,6 +467,54 @@ export const userActions = {
 		}
 	},
 
+	createActivity: async (data: {
+		title: string;
+		notes?: string;
+		status: 'new' | 'in_progress' | 'done';
+		time?: number;
+		context_id?: number | null;
+		date: string;
+	}) => {
+		try {
+			const newActivity = await api.activities.create(data);
+
+			// Add to cache and current activities if it's for the selected date
+			userStore.setState((state: UserState) => {
+				const cachedDay = state.dayCache[data.date];
+
+				// Update cache if this day is cached
+				let newCache = state.dayCache;
+				if (cachedDay) {
+					newCache = {
+						...state.dayCache,
+						[data.date]: {
+							...cachedDay,
+							activities: [...cachedDay.activities, newActivity],
+						},
+					};
+				}
+
+				// Update current activities if it's the selected date
+				const newActivities =
+					state.selectedDate === data.date
+						? [...state.activities, newActivity]
+						: state.activities;
+
+				return {
+					...state,
+					dayCache: newCache,
+					activities: newActivities,
+				};
+			});
+
+			return newActivity;
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : "Failed to create activity";
+			throw new Error(errorMessage);
+		}
+	},
+
 	deleteActivity: async (activityId: string, date: string) => {
 		try {
 			await api.activities.delete(activityId);

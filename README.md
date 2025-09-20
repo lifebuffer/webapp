@@ -47,11 +47,17 @@ pnpm dev
 ### ✅ Implemented Features
 
 - **Activity Management**: Complete CRUD operations with auto-save functionality
+  - Create activities via "New activity" button or keyboard shortcut ('c')
+  - Real-time editing with auto-save on blur
+  - Status management (new, in progress, done)
+  - Time tracking with smart parsing (e.g., "2h 30m")
 - **Context Organization**: Create and filter activities by context with emoji support
 - **Day Notes**: Markdown-enabled notes with live preview and editing
 - **Date Navigation**: Smart date selection with intelligent caching
+- **Keyboard Shortcuts**: Streamlined workflow with customizable shortcuts
 - **Security**: Laravel policies and OAuth authentication with PKCE
 - **Real-Time Updates**: Automatic cache management and state synchronization
+- **Comprehensive Testing**: Full API test coverage with Pest framework
 
 ### 🚧 Planned Features
 
@@ -60,6 +66,40 @@ pnpm dev
 - **Flexible Reporting**: Export activities to multiple formats (CSV, JSON, PDF)
 - **Mobile Support**: Progressive web app capabilities
 - **Team Features**: Shared contexts and collaborative tracking
+
+## Testing
+
+### API Tests
+
+The backend uses **Pest** testing framework for comprehensive API testing:
+
+```bash
+cd api
+
+# Run all tests
+php artisan test
+
+# Run specific test suite
+php artisan test --filter=ActivityTest
+
+# Run with testing environment (faster, uses in-memory SQLite)
+php artisan test --env=testing
+```
+
+**Test Coverage:**
+- Activity CRUD operations with validation
+- User authorization and security policies
+- Context relationships and permissions
+- Complete API endpoint testing
+
+### Frontend Tests
+
+Type checking is available for the frontend:
+
+```bash
+cd webapp
+tsc --noEmit
+```
 
 ## Development
 

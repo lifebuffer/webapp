@@ -165,6 +165,18 @@ export const api = {
 
   // Activity API methods
   activities: {
+    create: (data: {
+      title: string;
+      notes?: string;
+      status: 'new' | 'in_progress' | 'done';
+      time?: number;
+      context_id?: number | null;
+      date: string;
+    }): Promise<Activity> =>
+      apiRequest('/api/activities', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
     update: (id: string, data: Partial<Omit<Activity, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'deleted_at'>>): Promise<Activity> =>
       apiRequest(`/api/activities/${id}`, {
         method: 'PUT',

@@ -11,6 +11,60 @@ use Illuminate\Support\Facades\Validator;
 class ActivityController extends Controller
 {
     /**
+     * Create a new activity.
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'notes' => 'nullable|string',
+            'status' => 'required|in:new,in_progress,done',
+            'time' => 'nullable|integer|min:0',
+            'context_id' => 'nullable|exists:contexts,id',
+            'date' => 'required|date_format:Y-m-d',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $validator->validated();
+
+        // Ensure context belongs to the user if provided
+        if (isset($data['context_id']) && $data['context_id'] !== null) {
+            $contextExists = \App\Models\Context::where('id', $data['context_id'])
+                ->where('user_id', $user->id)
+                ->exists();
+
+            if (!$contextExists) {
+                return response()->json(['error' => 'Context not found'], 404);
+            }
+        }
+
+        // Create or find the day record (for consistency with the days table)
+        $day = \App\Models\Day::firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'date' => $data['date'],
+            ]
+        );
+
+        // Add user_id to the data (keep date as activities table has a date column)
+        $data['user_id'] = $user->id;
+
+        // Create the activity
+        $activity = Activity::create($data);
+
+        // Load context relationship
+        $activity->load('context');
+
+        return response()->json($activity, 201);
+    }
+
+    /**
      * Update the specified activity.
      */
     public function update(Request $request, string $id): JsonResponse

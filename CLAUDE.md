@@ -39,6 +39,8 @@ composer dev
 # Run tests
 composer test
 # Or directly: php artisan test
+# Run specific test files: php artisan test --filter=ActivityTest
+# Run with testing environment: php artisan test --env=testing
 
 # Code formatting
 php artisan pint
@@ -129,14 +131,20 @@ Follow rules in `/rules/laravel.md`
 
 - **Models**: `Activity`, `Context`, `Day` with proper relationships
 - **API Endpoints**: Full CRUD operations with Laravel policies for authorization
+  - `POST /api/activities` - Create new activities with validation
+  - `PUT /api/activities/{id}` - Update existing activities
+  - `DELETE /api/activities/{id}` - Soft delete activities
 - **Frontend Components**:
-  - `ActivityModal`: Complete activity editing with auto-save functionality
+  - `ActivityModal`: Complete activity editing/creation with auto-save functionality
   - Activity list with context filtering and status management
+  - "New activity" button in Activities card header
   - Real-time cache updates using TanStack Store
+- **Keyboard Shortcuts**: Press 'c' to create new activity
 - **Key Files**:
   - Backend: `api/app/Http/Controllers/Api/ActivityController.php`
   - Frontend: `webapp/src/components/activity-modal.tsx`
   - Store: `webapp/src/stores/userStore.ts`
+  - Shortcuts: `webapp/src/hooks/useKeyboardShortcuts.ts`
 
 ### Context Management ✅ Implemented
 
@@ -181,6 +189,19 @@ Follow rules in `/rules/laravel.md`
   - Real-time updates across components
   - Background data fetching for recent days
 
+### Keyboard Shortcuts ✅ Implemented
+
+- **System**: Custom React hook for keyboard shortcut management
+- **Features**:
+  - Intelligent input detection (doesn't trigger in form fields)
+  - Support for modifier keys (Ctrl, Alt, Shift, Meta)
+  - Extensible shortcut registration system
+- **Available Shortcuts**:
+  - `c` - Create new activity
+- **Key Files**:
+  - Hook: `webapp/src/hooks/useKeyboardShortcuts.ts`
+  - Integration: `webapp/src/routes/index.tsx`
+
 ### Voice Input & AI Categorization 🚧 Planned
 
 - Frontend: Implement Web Speech API integration
@@ -197,18 +218,50 @@ Follow rules in `/rules/laravel.md`
 
 ### API Tests
 
+LifeBuffer uses **Pest** testing framework for clean, expressive tests.
+
 ```bash
 cd api
+
+# Run all tests
 php artisan test
-php artisan test --filter=FeatureName
+
+# Run specific test file
+php artisan test --filter=ActivityTest
+
+# Run with testing environment (uses SQLite in-memory)
+php artisan test --env=testing
+
+# Run tests in parallel
 php artisan test --parallel
+
+# Run tests with coverage
+php artisan test --coverage
 ```
+
+**Test Coverage**:
+- **Activity API**: Comprehensive CRUD operations testing
+  - Activity creation with validation
+  - Activity updates with authorization
+  - Activity deletion with policies
+  - Context relationship validation
+  - User authorization checks
+- **Test Factories**: Available for User, Activity, Context, and Day models
+- **Test Environment**: Configured with SQLite in-memory database and array drivers
+
+**Key Test Files**:
+- `tests/Feature/ActivityTest.php` - Activity API endpoint tests
+- `tests/TestCase.php` - Base test configuration
+- `database/factories/` - Model factories for testing
+- `.env.testing` - Testing environment configuration
 
 ### Frontend Tests
 
 ```bash
 cd webapp
-# Add test runner when configured (Vitest recommended)
+# Test runner not yet configured (Vitest recommended for future implementation)
+# Type checking available:
+tsc --noEmit
 ```
 
 ## Environment Configuration

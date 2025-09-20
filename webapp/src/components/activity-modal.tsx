@@ -33,12 +33,16 @@ interface ActivityModalProps {
 	activity: Activity | null;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
+	isCreate?: boolean;
+	onCreated?: (activity: Activity) => void;
 }
 
 export function ActivityModal({
 	activity,
 	open,
 	onOpenChange,
+	isCreate = false,
+	onCreated,
 }: ActivityModalProps) {
 	const state = useStore(userStore);
 	const { contexts } = state;
@@ -48,6 +52,7 @@ export function ActivityModal({
 	const [isSaving, setIsSaving] = React.useState(false);
 	const [isDeleting, setIsDeleting] = React.useState(false);
 	const [timeInputValue, setTimeInputValue] = React.useState("");
+	const [isCreating, setIsCreating] = React.useState(false);
 
 	const getStatusVariant = (status: Activity["status"]) => {
 		switch (status) {
@@ -92,10 +97,21 @@ export function ActivityModal({
 		return total > 0 ? total : null;
 	};
 
-	// Initialize form data when activity changes
+	// Initialize form data when activity changes or for create mode
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <Avoid error>
 	React.useEffect(() => {
-		if (activity) {
+		if (isCreate) {
+			// Initialize with default values for create mode
+			setFormData({
+				title: "",
+				notes: "",
+				status: "new",
+				time: null,
+				context_id: state.selectedContextId,
+			});
+			setTimeInputValue("");
+			setHasUnsavedChanges(false);
+		} else if (activity) {
 			setFormData({
 				title: activity.title,
 				notes: activity.notes || "",
@@ -106,7 +122,7 @@ export function ActivityModal({
 			setTimeInputValue(formatTime(activity.time));
 			setHasUnsavedChanges(false);
 		}
-	}, [activity]);
+	}, [activity, isCreate, state.selectedContextId]);
 
 	const saveActivity = async (forceUpdate = false, overrideData = {}) => {
 		if (!activity || (!hasUnsavedChanges && !forceUpdate)) return;
@@ -171,6 +187,34 @@ export function ActivityModal({
 		handleFieldChange("time", parsedTime);
 	};
 
+	const handleCreate = async () => {
+		if (!formData.title?.trim()) {
+			return;
+		}
+
+		setIsCreating(true);
+		try {
+			const newActivity = await userActions.createActivity({
+				title: formData.title,
+				notes: formData.notes || undefined,
+				status: formData.status || "new",
+				time: formData.time || undefined,
+				context_id: formData.context_id || undefined,
+				date: state.selectedDate,
+			});
+
+			if (onCreated) {
+				onCreated(newActivity);
+			}
+
+			onOpenChange(false); // Close modal after successful creation
+		} catch (error) {
+			console.error("Failed to create activity:", error);
+		} finally {
+			setIsCreating(false);
+		}
+	};
+
 	const handleDelete = async () => {
 		if (!activity) return;
 
@@ -185,14 +229,14 @@ export function ActivityModal({
 		}
 	};
 
-	if (!activity) return null;
+	if (!activity && !isCreate) return null;
 
 	return (
 		<Dialog open={open} onOpenChange={handleClose}>
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle className="flex items-center gap-2">
-						Edit Activity
+						{isCreate ? "Create Activity" : "Edit Activity"}
 					</DialogTitle>
 				</DialogHeader>
 
@@ -200,18 +244,18 @@ export function ActivityModal({
 					{/* Status */}
 					<div className="space-y-2">
 						<DropdownMenu>
-							<DropdownMenuTrigger asChild disabled={isSaving}>
+							<DropdownMenuTrigger asChild disabled={isSaving || isCreating}>
 								<Button
 									variant="outline"
 									className="w-fit justify-between"
-									disabled={isSaving}
+									disabled={isSaving || isCreating}
 								>
 									<Badge
 										variant={getStatusVariant(
-											formData.status || activity.status,
+											formData.status || (activity?.status || "new"),
 										)}
 									>
-										{getStatusLabel(formData.status || activity.status)}
+										{getStatusLabel(formData.status || (activity?.status || "new"))}
 									</Badge>
 									<ChevronDown className="ml-2 h-4 w-4" />
 								</Button>
@@ -253,7 +297,7 @@ export function ActivityModal({
 							value={formData.title || ""}
 							onChange={(e) => handleFieldChange("title", e.target.value)}
 							onBlur={handleBlur}
-							disabled={isSaving}
+							disabled={isSaving || isCreating}
 						/>
 					</div>
 
@@ -268,7 +312,7 @@ export function ActivityModal({
 								// Save immediately when context changes with the new value
 								saveActivity(true, { context_id: newContextId });
 							}}
-							disabled={isSaving}
+							disabled={isSaving || isCreating}
 						>
 							<SelectTrigger>
 								<SelectValue placeholder="Select a context" />
@@ -293,7 +337,7 @@ export function ActivityModal({
 							value={timeInputValue}
 							onChange={(e) => handleTimeChange(e.target.value)}
 							onBlur={handleBlur}
-							disabled={isSaving}
+							disabled={isSaving || isCreating}
 						/>
 					</div>
 
@@ -306,31 +350,49 @@ export function ActivityModal({
 							value={formData.notes || ""}
 							onChange={(e) => handleFieldChange("notes", e.target.value)}
 							onBlur={handleBlur}
-							disabled={isSaving}
+							disabled={isSaving || isCreating}
 							rows={4}
 						/>
 					</div>
 
 					{/* Action Buttons */}
 					<div className="pt-4 space-y-3">
-						{/* Save Button */}
+						{/* Save/Create Button */}
 						<Button
 							onClick={async () => {
-								if (hasUnsavedChanges) {
-									await saveActivity(true);
+								if (isCreate) {
+									await handleCreate();
+								} else {
+									if (hasUnsavedChanges) {
+										await saveActivity(true);
+									}
+									handleClose();
 								}
-								handleClose();
 							}}
-							disabled={isSaving || isDeleting}
+							disabled={isSaving || isCreating || isDeleting || (isCreate && !formData.title?.trim())}
 							className={`w-full transition-all duration-300 ease-in-out ${
-								hasUnsavedChanges
+								isCreate
+									? "bg-primary hover:bg-primary/90 text-primary-foreground"
+									: hasUnsavedChanges
 									? "bg-red-600 hover:bg-red-700 text-white"
 									: "bg-green-600 hover:bg-green-700 text-white"
 							}`}
-							variant={hasUnsavedChanges ? "destructive" : "default"}
+							variant={isCreate ? "default" : hasUnsavedChanges ? "destructive" : "default"}
 						>
 							<div className="flex items-center justify-center transition-all duration-200 ease-in-out">
-								{isSaving ? (
+								{isCreating ? (
+									<>
+										<Save className="h-4 w-4 mr-2 animate-pulse transition-transform duration-200" />
+										<span className="transition-opacity duration-200">
+											Creating...
+										</span>
+									</>
+								) : isCreate ? (
+									<>
+										<Save className="h-4 w-4 mr-2" />
+										<span>Create Activity</span>
+									</>
+								) : isSaving ? (
 									<>
 										<Save className="h-4 w-4 mr-2 animate-pulse transition-transform duration-200" />
 										<span className="transition-opacity duration-200">
@@ -355,27 +417,29 @@ export function ActivityModal({
 							</div>
 						</Button>
 
-						{/* Delete Button */}
-						<Button
-							onClick={handleDelete}
-							disabled={isSaving || isDeleting}
-							variant="destructive"
-							className="w-full bg-red-600 hover:bg-red-700 text-white"
-						>
-							<div className="flex items-center justify-center">
-								{isDeleting ? (
-									<>
-										<Trash2 className="h-4 w-4 mr-2 animate-pulse" />
-										<span>Deleting...</span>
-									</>
-								) : (
-									<>
-										<Trash2 className="h-4 w-4 mr-2" />
-										<span>Delete Activity</span>
-									</>
-								)}
-							</div>
-						</Button>
+						{/* Delete Button - only show in edit mode */}
+						{!isCreate && (
+							<Button
+								onClick={handleDelete}
+								disabled={isSaving || isCreating || isDeleting}
+								variant="destructive"
+								className="w-full bg-red-600 hover:bg-red-700 text-white"
+							>
+								<div className="flex items-center justify-center">
+									{isDeleting ? (
+										<>
+											<Trash2 className="h-4 w-4 mr-2 animate-pulse" />
+											<span>Deleting...</span>
+										</>
+									) : (
+										<>
+											<Trash2 className="h-4 w-4 mr-2" />
+											<span>Delete Activity</span>
+										</>
+									)}
+								</div>
+							</Button>
+						)}
 					</div>
 				</div>
 			</DialogContent>

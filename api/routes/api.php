@@ -28,6 +28,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 	Route::apiResource('contexts', ContextController::class);
 
 	// Activity routes
+	Route::post('/activities', [ActivityController::class, 'store']);
 	Route::put('/activities/{id}', [ActivityController::class, 'update']);
 	Route::delete('/activities/{id}', [ActivityController::class, 'destroy']);
 
