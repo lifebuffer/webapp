@@ -196,17 +196,48 @@ Follow rules in `/rules/laravel.md`
   - Intelligent input detection (doesn't trigger in form fields)
   - Support for modifier keys (Ctrl, Alt, Shift, Meta)
   - Extensible shortcut registration system
+  - Modal-aware shortcuts (disabled when modals are open)
 - **Available Shortcuts**:
   - `c` - Create new activity
+  - `t` - Voice record new activity
+  - `e` - Edit selected activity
+  - `d` - Delete selected activity (with confirmation)
+  - `↑/↓` - Navigate between activities
+  - `←/→` - Navigate between days
+  - `Escape` - Close modals/cancel actions
+- **Modal Navigation**:
+  - `↑/↓` - Navigate form fields (activity modal)
+  - `Tab` - Navigate form fields
+  - `Enter` - Submit forms
+  - `←/→` - Navigate buttons (delete modal)
+  - `t` - Start/stop recording (voice modal)
 - **Key Files**:
   - Hook: `webapp/src/hooks/useKeyboardShortcuts.ts`
   - Integration: `webapp/src/routes/index.tsx`
+  - Modal: `webapp/src/components/keyboard-shortcuts-modal.tsx`
 
-### Voice Input & AI Categorization 🚧 Planned
+### Voice Input & AI Processing ✅ Implemented
 
-- Frontend: Implement Web Speech API integration
-- Backend: Create endpoints for processing voice transcriptions
-- AI Integration: Set up service for categorization logic
+- **Frontend**: Web Audio API integration with real-time visualization
+- **Backend**: OpenAI Whisper + GPT-4o-mini processing pipeline
+- **Features**:
+  - One-touch recording with 't' keyboard shortcut
+  - Real-time audio wave visualization during recording
+  - Intelligent title/notes extraction from speech
+  - 60-second recording limit with countdown
+  - Multiple audio format support (WebM Opus, WAV, MP3, M4A, OGG)
+  - Comprehensive error handling with manual fallback
+- **AI Integration**:
+  - Whisper API for high-quality speech-to-text
+  - GPT-4o-mini for smart content structuring
+  - Automatic title extraction (5-8 words)
+  - Context-aware notes generation
+- **Key Files**:
+  - Frontend: `webapp/src/components/voice-recording-modal.tsx`
+  - Backend: `api/app/Http/Controllers/Api/ActivityController.php`
+  - API: `POST /api/activities/voice`
+  - Tests: `api/tests/Feature/VoiceActivityTest.php`
+  - Documentation: `VOICE_RECORDING.md`
 
 ### Reporting System 🚧 Planned
 

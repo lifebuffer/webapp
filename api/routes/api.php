@@ -29,6 +29,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
 	// Activity routes
 	Route::post('/activities', [ActivityController::class, 'store']);
+	Route::post('/activities/voice', [ActivityController::class, 'createFromVoice']);
 	Route::put('/activities/{id}', [ActivityController::class, 'update']);
 	Route::delete('/activities/{id}', [ActivityController::class, 'destroy']);
 
@@ -43,3 +44,6 @@ Route::group(['middleware' => 'auth:api'], function () {
 	// Export endpoint
 	Route::post('/export', [ExportController::class, 'export']);
 });
+
+// Debug route for voice endpoint testing (remove in production)
+Route::post('/debug/voice', [ActivityController::class, 'createFromVoice']);

@@ -6,6 +6,7 @@ import { ActivityModal } from "~/components/activity-modal";
 import { DeleteActivityModal } from "~/components/delete-activity-modal";
 import { EditableMarkdown } from "~/components/editable-markdown";
 import { RequireAuth } from "~/components/require-auth";
+import { VoiceRecordingModal } from "~/components/voice-recording-modal";
 import { getTodayString } from "~/utils/date";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -43,6 +44,7 @@ function Home() {
 	const [isModalOpen, setIsModalOpen] = React.useState(false);
 	const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+	const [isVoiceModalOpen, setIsVoiceModalOpen] = React.useState(false);
 	const [activityToDelete, setActivityToDelete] = React.useState<Activity | null>(null);
 
 	// Filter activities by selected context
@@ -72,8 +74,8 @@ function Home() {
 		}
 	}, [isAuthenticated]);
 
-	// Check if any modal is open (we'll need to add keyboard shortcuts modal to this check)
-	const isAnyModalOpen = isModalOpen || isCreateModalOpen || isDeleteModalOpen;
+	// Check if any modal is open
+	const isAnyModalOpen = isModalOpen || isCreateModalOpen || isDeleteModalOpen || isVoiceModalOpen;
 
 	// Register keyboard shortcuts - only when no modals are open
 	useKeyboardShortcuts([
@@ -82,6 +84,14 @@ function Home() {
 			handler: () => {
 				if (!isAnyModalOpen) {
 					setIsCreateModalOpen(true);
+				}
+			},
+		},
+		{
+			key: 't',
+			handler: () => {
+				if (!isAnyModalOpen) {
+					setIsVoiceModalOpen(true);
 				}
 			},
 		},
@@ -150,6 +160,8 @@ function Home() {
 					setIsCreateModalOpen(false);
 				} else if (isDeleteModalOpen) {
 					setIsDeleteModalOpen(false);
+				} else if (isVoiceModalOpen) {
+					setIsVoiceModalOpen(false);
 				}
 			},
 		},
@@ -348,6 +360,13 @@ function Home() {
 					activity={activityToDelete}
 					open={isDeleteModalOpen}
 					onOpenChange={setIsDeleteModalOpen}
+				/>
+
+				{/* Voice Recording Modal */}
+				<VoiceRecordingModal
+					open={isVoiceModalOpen}
+					onOpenChange={setIsVoiceModalOpen}
+					onError={() => setIsCreateModalOpen(true)}
 				/>
 			</div>
 		</RequireAuth>

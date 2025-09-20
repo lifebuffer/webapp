@@ -19,6 +19,7 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "~/components/ui/sidebar";
+import { Toaster } from "~/components/ui/sonner";
 import { userStore } from "~/stores/userStore";
 import appCss from "~/styles/app.css?url";
 import { AuthProvider } from "~/utils/auth";
@@ -125,6 +126,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 							<TanStackRouterDevtools position="bottom-right" />
 						)}
 					</AuthProvider>
+					<Toaster />
 				</ThemeProvider>
 				<Scripts />
 			</body>

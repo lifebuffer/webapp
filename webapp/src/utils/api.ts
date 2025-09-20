@@ -177,6 +177,28 @@ export const api = {
         method: 'POST',
         body: JSON.stringify(data),
       }),
+    createFromVoice: async (formData: FormData): Promise<{ title: string; notes?: string }> => {
+      const accessToken = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+
+      if (!accessToken) {
+        throw new ApiError(401, 'No access token available');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/activities/voice`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          // Don't set Content-Type for FormData - browser will set it with boundary
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new ApiError(response.status, `Voice processing failed: ${response.statusText}`);
+      }
+
+      return response.json();
+    },
     update: (id: string, data: Partial<Omit<Activity, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'deleted_at'>>): Promise<Activity> =>
       apiRequest(`/api/activities/${id}`, {
         method: 'PUT',

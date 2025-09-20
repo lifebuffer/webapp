@@ -41,6 +41,11 @@ const shortcuts: ShortcutItem[] = [
 		category: "Actions",
 	},
 	{
+		key: "T",
+		description: "Voice record new activity",
+		category: "Actions",
+	},
+	{
 		key: "E",
 		description: "Edit selected activity",
 		category: "Actions",
@@ -76,6 +81,13 @@ const shortcuts: ShortcutItem[] = [
 		key: "← / →",
 		description: "Navigate between buttons (in delete modal)",
 		category: "Modal Navigation",
+	},
+
+	// Voice recording shortcuts
+	{
+		key: "T",
+		description: "Start/stop voice recording (in voice modal)",
+		category: "Voice Recording",
 	},
 ];
 
