@@ -14,6 +14,7 @@ export LOG_STACK="single"
 export LOG_DEPRECATIONS_CHANNEL="null"
 export LOG_LEVEL="debug"
 
+export DB_CONNECTION="${DATABASE_SCHEME}"
 export DB_HOST="${DATABASE_HOST}"
 export DB_PORT="${DATABASE_PORT}"
 export DB_PATH="${DATABASE_PATH}"
