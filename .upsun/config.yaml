@@ -33,7 +33,7 @@ applications:
       locations:
         "/":
           passthru: "/index.php"
-          root: "api/public"
+          root: "public"
     build:
       flavor: none
     hooks:
@@ -85,3 +85,9 @@ routes:
   "https://api.{default}/":
     type: upstream
     upstream: "api:http"
+  "http://app.{default}/":
+    type: redirect
+    to: "https://app.{default}/"
+  "http://api.{default}/":
+    type: redirect
+    to: "https://api.{default}/"
