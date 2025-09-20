@@ -277,11 +277,18 @@ php artisan test --coverage
   - Activity deletion with policies
   - Context relationship validation
   - User authorization checks
+- **Voice Recording API**: Complete voice processing pipeline testing
+  - File upload validation (type, size, format)
+  - OpenAI Whisper API integration testing
+  - ChatGPT API processing and fallback scenarios
+  - Error handling and cleanup verification
+  - Multiple audio format support testing
 - **Test Factories**: Available for User, Activity, Context, and Day models
 - **Test Environment**: Configured with SQLite in-memory database and array drivers
 
 **Key Test Files**:
 - `tests/Feature/ActivityTest.php` - Activity API endpoint tests
+- `tests/Feature/VoiceActivityTest.php` - Voice recording endpoint tests
 - `tests/TestCase.php` - Base test configuration
 - `database/factories/` - Model factories for testing
 - `.env.testing` - Testing environment configuration
@@ -304,7 +311,7 @@ Key variables to configure:
 - `APP_URL`
 - `DB_CONNECTION` (sqlite default)
 - `QUEUE_CONNECTION`
-- API keys for AI services
+- `OPENAI_API_KEY` - Required for voice recording feature (Whisper + GPT-4o-mini)
 
 ### Web App
 

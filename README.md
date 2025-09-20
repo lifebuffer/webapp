@@ -55,13 +55,17 @@ pnpm dev
 - **Day Notes**: Markdown-enabled notes with live preview and editing
 - **Date Navigation**: Smart date selection with intelligent caching
 - **Keyboard Shortcuts**: Streamlined workflow with customizable shortcuts
+- **Voice Input**: Complete AI-powered voice recording with intelligent processing
+  - Press 't' to start voice recording with real-time audio visualization
+  - OpenAI Whisper integration for speech-to-text transcription
+  - GPT-4o-mini for intelligent title and notes extraction
+  - Automatic activity creation with success notifications
 - **Security**: Laravel policies and OAuth authentication with PKCE
 - **Real-Time Updates**: Automatic cache management and state synchronization
 - **Comprehensive Testing**: Full API test coverage with Pest framework
 
 ### 🚧 Planned Features
 
-- **Voice Input**: Web Speech API integration for quick activity logging
 - **AI Categorization**: Smart activity organization and suggestions
 - **Flexible Reporting**: Export activities to multiple formats (CSV, JSON, PDF)
 - **Mobile Support**: Progressive web app capabilities
@@ -88,6 +92,7 @@ php artisan test --env=testing
 
 **Test Coverage:**
 - Activity CRUD operations with validation
+- Voice recording API with OpenAI integration testing
 - User authorization and security policies
 - Context relationships and permissions
 - Complete API endpoint testing
