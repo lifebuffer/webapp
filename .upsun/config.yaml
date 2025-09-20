@@ -72,6 +72,8 @@ applications:
           root: ""
           passthru: true
   landing:
+    source:
+      root: "/landing"
     type: "nodejs:22"
     build:
       flavor: none
