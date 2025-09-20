@@ -64,7 +64,7 @@ applications:
         npm run build
     web:
       commands:
-        start: "npx next start -p $PORT"
+        start: "npm run start"
       upstream:
         socket_family: tcp
       locations:
