@@ -233,6 +233,7 @@ Follow rules in `/rules/laravel.md`
 - **Available Shortcuts**:
   - `c` - Create new activity
   - `v` - Voice record new activity
+  - `t` - Start timer for selected activity
   - `e` - Edit selected activity
   - `d` - Delete selected activity (with confirmation)
   - `↑/↓` - Navigate between activities
@@ -244,10 +245,30 @@ Follow rules in `/rules/laravel.md`
   - `Enter` - Submit forms
   - `←/→` - Navigate buttons (delete modal)
   - `v` - Start/stop recording (voice modal)
+  - `Space` - Play/pause timer (timer modal)
+  - `Enter` - Complete timer and save time (timer modal)
 - **Key Files**:
   - Hook: `webapp/src/hooks/useKeyboardShortcuts.ts`
   - Integration: `webapp/src/routes/index.tsx`
   - Modal: `webapp/src/components/keyboard-shortcuts-modal.tsx`
+
+### Activity Timer ✅ Implemented
+
+- **Features**: Time tracking for activities with play/pause/complete functionality
+- **UI Components**:
+  - Play button on each activity item in the list
+  - Timer modal with large time display
+  - Pause/resume and complete controls
+- **Functionality**:
+  - Start timer with play button or 'T' keyboard shortcut
+  - Auto-start when modal opens
+  - Additive time tracking (adds to existing time_minutes)
+  - Real-time elapsed time display (HH:MM:SS format)
+  - Keyboard controls (Space to pause/resume, Enter to complete)
+- **Key Files**:
+  - Component: `webapp/src/components/timer-modal.tsx`
+  - Integration: `webapp/src/routes/index.tsx`
+  - Store: `webapp/src/stores/userStore.ts` (updateActivity action)
 
 ### Voice Input & AI Processing ✅ Implemented
 

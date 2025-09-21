@@ -46,6 +46,11 @@ const shortcuts: ShortcutItem[] = [
 		category: "Actions",
 	},
 	{
+		key: "T",
+		description: "Start timer for selected activity",
+		category: "Actions",
+	},
+	{
 		key: "E",
 		description: "Edit selected activity",
 		category: "Actions",
@@ -88,6 +93,18 @@ const shortcuts: ShortcutItem[] = [
 		key: "V",
 		description: "Start/stop voice recording (in voice modal)",
 		category: "Voice Recording",
+	},
+
+	// Timer shortcuts
+	{
+		key: "Space",
+		description: "Play/pause timer (in timer modal)",
+		category: "Timer",
+	},
+	{
+		key: "Enter",
+		description: "Complete timer and save time (in timer modal)",
+		category: "Timer",
 	},
 ];
 

@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
-import { Clock, FileText, Keyboard, Mic, Plus } from "lucide-react";
+import { Clock, FileText, Keyboard, Mic, Play, Plus } from "lucide-react";
 import * as React from "react";
 import { ActivityModal } from "~/components/activity-modal";
 import { DeleteActivityModal } from "~/components/delete-activity-modal";
 import { EditableMarkdown } from "~/components/editable-markdown";
 import { RequireAuth } from "~/components/require-auth";
+import { TimerModal } from "~/components/timer-modal";
 import { VoiceRecordingModal } from "~/components/voice-recording-modal";
 import { getTodayString } from "~/utils/date";
 import { Alert, AlertDescription } from "~/components/ui/alert";
@@ -46,6 +47,8 @@ function Home() {
 	const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
 	const [isVoiceModalOpen, setIsVoiceModalOpen] = React.useState(false);
+	const [isTimerModalOpen, setIsTimerModalOpen] = React.useState(false);
+	const [timerActivity, setTimerActivity] = React.useState<Activity | null>(null);
 	const [activityToDelete, setActivityToDelete] = React.useState<Activity | null>(null);
 
 	// Filter activities by selected context
@@ -76,7 +79,7 @@ function Home() {
 	}, [isAuthenticated]);
 
 	// Check if any modal is open
-	const isAnyModalOpen = isModalOpen || isCreateModalOpen || isDeleteModalOpen || isVoiceModalOpen;
+	const isAnyModalOpen = isModalOpen || isCreateModalOpen || isDeleteModalOpen || isVoiceModalOpen || isTimerModalOpen;
 
 	// Register keyboard shortcuts - only when no modals are open
 	useKeyboardShortcuts([
@@ -93,6 +96,18 @@ function Home() {
 			handler: () => {
 				if (!isAnyModalOpen) {
 					setIsVoiceModalOpen(true);
+				}
+			},
+		},
+		{
+			key: 't',
+			handler: () => {
+				if (!isAnyModalOpen && selectedActivityId) {
+					const activity = filteredActivities.find(a => a.id === selectedActivityId);
+					if (activity) {
+						setTimerActivity(activity);
+						setIsTimerModalOpen(true);
+					}
 				}
 			},
 		},
@@ -292,6 +307,21 @@ function Home() {
 											}
 										}}
 									>
+										{/* Timer Button */}
+										<Button
+											size="icon"
+											variant="ghost"
+											className="h-8 w-8"
+											onClick={(e) => {
+												e.stopPropagation();
+												setTimerActivity(activity);
+												setIsTimerModalOpen(true);
+											}}
+											title="Start timer"
+										>
+											<Play className="h-4 w-4" />
+										</Button>
+
 										{/* Status Badge */}
 										<Badge
 											className="w-24 text-center flex items-center justify-center"
@@ -347,7 +377,11 @@ function Home() {
 						</span>
 						<span className="text-muted-foreground">•</span>
 						<span className="flex items-center gap-1">
-							Press <kbd className="px-2 py-1 text-xs font-semibold bg-background rounded border">T</kbd> to record by voice
+							Press <kbd className="px-2 py-1 text-xs font-semibold bg-background rounded border">V</kbd> to record by voice
+						</span>
+						<span className="text-muted-foreground">•</span>
+						<span className="flex items-center gap-1">
+							Press <kbd className="px-2 py-1 text-xs font-semibold bg-background rounded border">T</kbd> to start timer
 						</span>
 						<span className="text-muted-foreground">•</span>
 						<span className="flex items-center gap-1">
@@ -391,6 +425,13 @@ function Home() {
 					open={isVoiceModalOpen}
 					onOpenChange={setIsVoiceModalOpen}
 					onError={() => setIsCreateModalOpen(true)}
+				/>
+
+				{/* Timer Modal */}
+				<TimerModal
+					activity={timerActivity}
+					open={isTimerModalOpen}
+					onOpenChange={setIsTimerModalOpen}
 				/>
 			</div>
 		</RequireAuth>

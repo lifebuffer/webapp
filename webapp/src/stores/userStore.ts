@@ -532,6 +532,34 @@ export const userActions = {
 		}
 	},
 
+	updateActivity: async (activityId: string, data: Partial<Omit<Activity, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'deleted_at'>>) => {
+		try {
+			const updatedActivity = await api.activities.update(activityId, data);
+
+			// Update in cache if we have the date
+			if (updatedActivity.date) {
+				userActions.updateActivityInCache(updatedActivity.date, activityId, updatedActivity);
+			}
+
+			// Also update in current activities if it's displayed
+			userStore.setState((state: UserState) => {
+				const updatedActivities = state.activities.map(activity =>
+					activity.id === activityId ? updatedActivity : activity
+				);
+				return {
+					...state,
+					activities: updatedActivities,
+				};
+			});
+
+			return updatedActivity;
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : "Failed to update activity";
+			throw new Error(errorMessage);
+		}
+	},
+
 	deleteActivity: async (activityId: string, date: string) => {
 		try {
 			await api.activities.delete(activityId);
