@@ -7,7 +7,7 @@ The Voice Recording feature allows users to create activities by speaking instea
 ## Features
 
 ### Core Functionality
-- **One-touch recording**: Press 't' to start/stop recording
+- **One-touch recording**: Press 'v' to start/stop recording
 - **Real-time visual feedback**: Audio wave visualization during recording
 - **Intelligent processing**: AI-powered title and notes extraction
 - **Multiple audio formats**: WebM Opus (preferred), WAV, MP3, M4A, OGG
@@ -18,7 +18,7 @@ The Voice Recording feature allows users to create activities by speaking instea
 - **Auto-start**: Recording begins immediately when modal opens
 - **Visual states**: Clear indicators for requesting, recording, processing
 - **Progress feedback**: Countdown timer and audio level display
-- **Keyboard shortcuts**: 't' to toggle, Escape to cancel
+- **Keyboard shortcuts**: 'v' to toggle, Escape to cancel
 - **Error recovery**: Manual entry option on processing failures
 
 ## Technical Architecture
@@ -127,7 +127,7 @@ OPENAI_API_KEY=sk-proj-your-api-key-here
 ### For Users
 
 1. **Start Recording**
-   - Press 't' key anywhere in the application
+   - Press 'v' key anywhere in the application
    - Grant microphone permission when prompted
    - Recording starts automatically
 
@@ -135,7 +135,7 @@ OPENAI_API_KEY=sk-proj-your-api-key-here
    - Speak clearly and naturally
    - Visual wave animation shows audio levels
    - Countdown timer displays remaining time
-   - Press 't' again to stop early
+   - Press 'v' again to stop early
 
 3. **Processing**
    - System shows "Processing..." state
@@ -150,8 +150,8 @@ OPENAI_API_KEY=sk-proj-your-api-key-here
 
 | Key | Action |
 |-----|--------|
-| `t` | Start/stop voice recording |
-| `t` (in modal) | Toggle recording state |
+| `v` | Start/stop voice recording |
+| `v` (in modal) | Toggle recording state |
 | `Escape` | Cancel recording and close modal |
 
 ## AI Processing Logic

@@ -89,7 +89,7 @@ function Home() {
 			},
 		},
 		{
-			key: 't',
+			key: 'v',
 			handler: () => {
 				if (!isAnyModalOpen) {
 					setIsVoiceModalOpen(true);

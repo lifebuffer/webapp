@@ -232,7 +232,7 @@ Follow rules in `/rules/laravel.md`
   - Modal-aware shortcuts (disabled when modals are open)
 - **Available Shortcuts**:
   - `c` - Create new activity
-  - `t` - Voice record new activity
+  - `v` - Voice record new activity
   - `e` - Edit selected activity
   - `d` - Delete selected activity (with confirmation)
   - `↑/↓` - Navigate between activities
@@ -243,7 +243,7 @@ Follow rules in `/rules/laravel.md`
   - `Tab` - Navigate form fields
   - `Enter` - Submit forms
   - `←/→` - Navigate buttons (delete modal)
-  - `t` - Start/stop recording (voice modal)
+  - `v` - Start/stop recording (voice modal)
 - **Key Files**:
   - Hook: `webapp/src/hooks/useKeyboardShortcuts.ts`
   - Integration: `webapp/src/routes/index.tsx`

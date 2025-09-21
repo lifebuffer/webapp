@@ -211,10 +211,10 @@ export function VoiceRecordingModal({
 		}
 	}, [onOpenChange, onError]);
 
-	// Toggle recording with 't' key
+	// Toggle recording with 'v' key
 	useKeyboardShortcuts([
 		{
-			key: 't',
+			key: 'v',
 			handler: () => {
 				if (open) {
 					if (state === 'recording') {
@@ -345,7 +345,7 @@ export function VoiceRecordingModal({
 					{state === 'recording' && (
 						<div className="text-center space-y-4">
 							<div className="text-sm text-muted-foreground">
-								Press <kbd className="px-2 py-1 bg-muted rounded text-xs">T</kbd> again to stop recording
+								Press <kbd className="px-2 py-1 bg-muted rounded text-xs">V</kbd> again to stop recording
 							</div>
 							<Button
 								onClick={stopRecording}
@@ -386,7 +386,7 @@ export function VoiceRecordingModal({
 					{/* Instructions */}
 					{state === 'idle' && (
 						<div className="text-center text-sm text-muted-foreground">
-							Press <kbd className="px-2 py-1 bg-muted rounded text-xs">T</kbd> to start recording
+							Press <kbd className="px-2 py-1 bg-muted rounded text-xs">V</kbd> to start recording
 						</div>
 					)}
 				</div>
