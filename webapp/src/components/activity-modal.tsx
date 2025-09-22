@@ -285,6 +285,17 @@ export function ActivityModal({
 				onCreated(newActivity);
 			}
 
+			// Reset form fields after successful creation
+			setFormData({
+				title: "",
+				notes: "",
+				status: "new",
+				time: null,
+				context_id: state.selectedContextId,
+			});
+			setTimeInputValue("");
+			setHasUnsavedChanges(false);
+
 			onOpenChange(false); // Close modal after successful creation
 		} catch (error) {
 			console.error("Failed to create activity:", error);
