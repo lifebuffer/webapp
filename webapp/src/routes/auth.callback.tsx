@@ -100,7 +100,7 @@ function AuthCallback() {
 		<div className="flex min-h-screen items-center justify-center">
 			<div className="text-center">
 				<h2 className="mb-2 font-semibold text-2xl">Authenticating...</h2>
-				<p className="text-gray-600">
+				<p className="text-muted-foreground">
 					Please wait while we complete your login.
 				</p>
 			</div>

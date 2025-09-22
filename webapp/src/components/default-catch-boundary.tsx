@@ -21,7 +21,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
 				<button
 					type="button"
 					className={
-						"rounded bg-gray-600 px-2 py-1 font-extrabold text-white uppercase dark:bg-gray-700"
+						"rounded bg-secondary px-2 py-1 font-extrabold text-secondary-foreground uppercase"
 					}
 					onClick={() => {
 						router.invalidate();
@@ -32,7 +32,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
 				{isRoot ? (
 					<Link
 						className={
-							"rounded bg-gray-600 px-2 py-1 font-extrabold text-white uppercase dark:bg-gray-700"
+							"rounded bg-secondary px-2 py-1 font-extrabold text-secondary-foreground uppercase"
 						}
 						to="/"
 					>
@@ -41,7 +41,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
 				) : (
 					<Link
 						className={
-							"rounded bg-gray-600 px-2 py-1 font-extrabold text-white uppercase dark:bg-gray-700"
+							"rounded bg-secondary px-2 py-1 font-extrabold text-secondary-foreground uppercase"
 						}
 						onClick={(e) => {
 							e.preventDefault();
