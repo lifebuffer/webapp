@@ -68,7 +68,7 @@ export function Status() {
       status: 'available',
     },
     {
-      icon: <Smartphone className="h-6 w-6 text-gray-400" />,
+      icon: <Smartphone className="h-6 w-6 text-blue-400" />,
       platform: 'iOS',
       status: 'in_progress',
     },

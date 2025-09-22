@@ -77,7 +77,7 @@ export function FAQSection() {
     {
       question: 'Is LifeBuffer open source?',
       answer:
-        'Yes! Both the web application and CLI are completely open source. You can review our code, contribute improvements, or even self-host your own instance. Find us on GitHub at github.com/gmoigneu/lifebuffer.',
+        'Yes! The web application, CLI, and iOS app are completely open source. You can review our code, contribute improvements, or even self-host your own instance. Find us on GitHub at github.com/lifebuffer.',
     },
     {
       question: 'Can I self-host LifeBuffer?',
@@ -87,7 +87,7 @@ export function FAQSection() {
     {
       question: 'How can I contribute to LifeBuffer?',
       answer:
-        'We welcome contributions! Report bugs, suggest features, submit pull requests, or help with documentation. Both repositories (web app and CLI) are on GitHub with contribution guidelines.',
+        'We welcome contributions! Report bugs, suggest features, submit pull requests, or help with documentation. All repositories (web app, CLI, and iOS app) are on GitHub with contribution guidelines.',
     },
   ];
 

@@ -1,4 +1,4 @@
-import { Github, Code, Users, Heart } from 'lucide-react';
+import { Github, Code, Users, Heart, Smartphone } from 'lucide-react';
 
 interface OpenSourceFeatureProps {
   icon: React.ReactNode;
@@ -69,7 +69,7 @@ export function OpenSource() {
           ))}
         </div>
 
-        <div className="mt-16 grid gap-8 md:grid-cols-2">
+        <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm">
             <div className="mb-6 flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/20">
@@ -85,7 +85,7 @@ export function OpenSource() {
               AI categorization, and professional reporting.
             </p>
             <a
-              href="https://github.com/gmoigneu/lifebuffer"
+              href="https://github.com/lifebuffer/webapp"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-all hover:bg-purple-700"
@@ -110,10 +110,35 @@ export function OpenSource() {
               Perfect for developers and automation enthusiasts.
             </p>
             <a
-              href="https://github.com/gmoigneu/liffebuffer-cli"
+              href="https://github.com/lifebuffer/cli"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-gray-600 px-4 py-2 font-medium text-white transition-all hover:bg-gray-700"
+            >
+              <Github className="h-4 w-4" />
+              View on GitHub
+            </a>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm">
+            <div className="mb-6 flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/20">
+                <Smartphone className="h-6 w-6 text-blue-400" />
+              </div>
+              <div>
+                <h3 className="font-medium text-xl text-white">iOS App</h3>
+                <p className="text-gray-400 text-sm">Native mobile app in testing</p>
+              </div>
+            </div>
+            <p className="mb-6 text-gray-400 leading-relaxed">
+              Native iOS application currently in beta testing. Full LifeBuffer experience
+              optimized for mobile usage patterns.
+            </p>
+            <a
+              href="https://github.com/lifebuffer/ios"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-all hover:bg-blue-700"
             >
               <Github className="h-4 w-4" />
               View on GitHub

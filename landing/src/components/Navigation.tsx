@@ -92,7 +92,7 @@ export function Navigation() {
 
           <div className="hidden items-center space-x-4 md:flex">
             <a
-              href="https://github.com/gmoigneu/lifebuffer"
+              href="https://github.com/lifebuffer/webapp"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 transition-colors hover:text-white"
