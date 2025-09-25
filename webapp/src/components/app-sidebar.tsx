@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link } from "@tanstack/react-router";
-import { Download, Keyboard } from "lucide-react";
+import { Download, Keyboard, Users } from "lucide-react";
 
 import { Contexts } from "~/components/contexts";
 import { DatePicker } from "~/components/date-picker";
@@ -32,8 +32,14 @@ export function AppSidebar({
 				<Contexts />
 			</SidebarContent>
 			<SidebarFooter className="border-t border-sidebar-border p-4 space-y-2">
-				<Link to="/export" className="w-full">
+				<Link to="/prepare-meeting" className="w-full">
 					<Button className="w-full bg-primary hover:bg-primary/90">
+						<Users className="mr-2 h-4 w-4" />
+						Prepare meeting
+					</Button>
+				</Link>
+				<Link to="/export" className="w-full">
+					<Button variant="outline" className="w-full">
 						<Download className="mr-2 h-4 w-4" />
 						Export
 					</Button>

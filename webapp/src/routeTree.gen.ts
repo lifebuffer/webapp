@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as PrepareMeetingRouteImport } from './routes/prepare-meeting'
 import { Route as ExportRouteImport } from './routes/export'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
@@ -17,6 +18,11 @@ import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrepareMeetingRoute = PrepareMeetingRouteImport.update({
+  id: '/prepare-meeting',
+  path: '/prepare-meeting',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExportRoute = ExportRouteImport.update({
@@ -38,12 +44,14 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/export': typeof ExportRoute
+  '/prepare-meeting': typeof PrepareMeetingRoute
   '/settings': typeof SettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/export': typeof ExportRoute
+  '/prepare-meeting': typeof PrepareMeetingRoute
   '/settings': typeof SettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
 }
@@ -51,20 +59,33 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/export': typeof ExportRoute
+  '/prepare-meeting': typeof PrepareMeetingRoute
   '/settings': typeof SettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/export' | '/settings' | '/auth/callback'
+  fullPaths:
+    | '/'
+    | '/export'
+    | '/prepare-meeting'
+    | '/settings'
+    | '/auth/callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/export' | '/settings' | '/auth/callback'
-  id: '__root__' | '/' | '/export' | '/settings' | '/auth/callback'
+  to: '/' | '/export' | '/prepare-meeting' | '/settings' | '/auth/callback'
+  id:
+    | '__root__'
+    | '/'
+    | '/export'
+    | '/prepare-meeting'
+    | '/settings'
+    | '/auth/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExportRoute: typeof ExportRoute
+  PrepareMeetingRoute: typeof PrepareMeetingRoute
   SettingsRoute: typeof SettingsRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
 }
@@ -76,6 +97,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prepare-meeting': {
+      id: '/prepare-meeting'
+      path: '/prepare-meeting'
+      fullPath: '/prepare-meeting'
+      preLoaderRoute: typeof PrepareMeetingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/export': {
@@ -105,6 +133,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExportRoute: ExportRoute,
+  PrepareMeetingRoute: PrepareMeetingRoute,
   SettingsRoute: SettingsRoute,
   AuthCallbackRoute: AuthCallbackRoute,
 }

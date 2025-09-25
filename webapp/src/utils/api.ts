@@ -237,6 +237,24 @@ export const api = {
       }),
   },
 
+  // Meeting preparation
+  meeting: {
+    prepare: async (data: {
+      start_date: string;
+      end_date: string;
+      context_ids: number[];
+      meeting_type?: 'manager_1on1' | 'team_update' | 'project_review';
+      include_time?: boolean;
+      include_notes?: boolean;
+      group_by_context?: boolean;
+    }): Promise<any> => {
+      return apiRequest('/api/meetings/prepare', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+  },
+
   // Export functionality
   export: {
     generate: async (data: {

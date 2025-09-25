@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\DayController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ExportController;
+use App\Http\Controllers\Api\MeetingController;
 
 Route::group(['middleware' => 'auth:api'], function () {
 	Route::get('/user', function (Request $request) {
@@ -43,6 +44,9 @@ Route::group(['middleware' => 'auth:api'], function () {
 	
 	// Export endpoint
 	Route::post('/export', [ExportController::class, 'export']);
+
+	// Meeting preparation endpoint
+	Route::post('/meetings/prepare', [MeetingController::class, 'prepare']);
 });
 
 // Debug route for voice endpoint testing (remove in production)
